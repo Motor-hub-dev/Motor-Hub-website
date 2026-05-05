@@ -1,0 +1,31 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/El4aby7/Motor-Hub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/El4aby7/Motor-Hub/issues"
+  },
+  "homepage": "https://github.com/El4aby7/Motor-Hub#readme",
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
+    "@jest/globals": "^30.3.0",
+    "babel-jest": "^30.3.0",
+    "jest": "^30.3.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.103.0"
+  }
+}

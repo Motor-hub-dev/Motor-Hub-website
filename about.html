@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Motor Hub - About Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Metropolis:wght@400;500;700&family=Domine:wght@400;500;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#f2ca50",
+                        background: "#131313",
+                        surface: "#131313",
+                        "on-surface": "#e5e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "outline-variant": "#4d4635"
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        /* Premium toggle button style */
+        .nav-toggle-btn {
+            background: #1a1812;
+            border: 1px solid rgba(242, 202, 80, 0.4);
+            color: #f2ca50;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-toggle-btn:hover {
+            background: rgba(242, 202, 80, 0.1);
+            border-color: #f2ca50;
+            box-shadow: 0 0 10px rgba(242, 202, 80, 0.2);
+        }
+        .site-brand { text-decoration: none; cursor: pointer; }
+        html, body { overflow-x: hidden; max-width: 100vw; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+    <!-- TopNavBar -->
+    <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
+        <!-- Clickable Logo/Brand -->
+        <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">
+            <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-8 md:h-10 object-contain" />
+        </a>
+
+        <!-- Desktop Nav -->
+        <div class="hidden md:flex gap-10 items-center">
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="favorites.html" data-i18n="nav_favorites">Favorites</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="trading.html" data-i18n="nav_trading">Sell / Trade</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="about.html" data-i18n="nav_about">About</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="contact.html" data-i18n="nav_contact">Contact</a>
+
+            <!-- Toggles -->
+            <button id="lang-toggle" class="nav-toggle-btn">AR</button>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="md:hidden text-primary p-1">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+    </nav>
+
+    <!-- Mobile Drawer (Hidden by default) -->
+    <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-28 px-6 pb-12">
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="favorites.html" data-i18n="nav_favorites">Favorites</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="trading.html" data-i18n="nav_trading">Sell / Trade</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="about.html" data-i18n="nav_about">About</a>
+        <a class="text-2xl font-bold uppercase text-white mb-12" href="contact.html" data-i18n="nav_contact">Contact</a>
+        <button id="mobile-lang-toggle" class="nav-toggle-btn text-left mb-4 w-fit">Switch to AR</button>
+    </div>
+
+    <main class="flex-grow pt-32 pb-24 px-4 md:px-12 max-w-[1200px] mx-auto w-full">
+        <section class="text-center mb-24">
+            <span class="text-primary tracking-[0.2em] font-bold text-xs uppercase mb-4 block" data-i18n="about_mission">Our Mission</span>
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-8 text-white" data-i18n="about_title">THE APEX OF<br/>AUTOMOTIVE CONCIERGE</h1>
+            <p class="text-neutral-400 text-lg md:text-xl leading-relaxed max-w-3xl mx-auto" data-i18n="about_desc">
+                Motor Hub is not a dealership. We are a private brokerage and concierge service dedicated to sourcing the most exclusive, elusive, and extraordinary vehicles on the planet for a discerning clientele. Discretion, speed, and absolute perfection are our minimum standards.
+            </p>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <div class="aspect-square bg-surface-container-low overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1614200187524-dc4b892acf16" alt="Electric Vanguard" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"/>
+            </div>
+            <div>
+                <span class="text-primary tracking-[0.2em] font-bold text-xs uppercase mb-4 block" data-i18n="about_future">The Future</span>
+                <h2 class="text-4xl font-bold tracking-tighter mb-6 text-white" data-i18n="about_future_title">REDEFINING THE<br/>ELECTRIC VANGUARD</h2>
+                <p class="text-neutral-400 leading-relaxed mb-6" data-i18n="about_future_desc1">
+                    As the world pivots toward electrification, the definition of luxury and performance evolves. We maintain direct channels with the world's leading hyper-EV manufacturers, ensuring our clients are allocated the first chassis of limited-run electric masterpieces.
+                </p>
+                <p class="text-neutral-400 leading-relaxed" data-i18n="about_future_desc2">
+                    From the silent, surging torque of modern electric grand tourers to the aerodynamically flawless electric hypercars shattering track records, Motor Hub secures your place at the frontier of automotive history.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating FAB -->
+    <button id="fab-btn" class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-background rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50">
+        <span class="material-symbols-outlined">chat</span>
+    </button>
+
+    <!-- FAB Popup -->
+    <div id="fab-popup" class="fixed bottom-24 right-8 bg-surface-container-low border border-outline-variant p-4 rounded shadow-2xl hidden z-50 flex-col gap-4">
+        <a href="https://wa.me/123456789" target="_blank" class="flex items-center gap-3 text-white hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">chat_bubble</span> WhatsApp
+        </a>
+        <a href="tel:+123456789" class="flex items-center gap-3 text-white hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">call</span> Direct Call
+        </a>
+    </div>
+
+<script>
+
+        </script>
+<script>
+
+        </script>
+<script>
+
+        </script>
+<script>
+
+        // Mobile Menu
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const drawer = document.getElementById('mobile-drawer');
+        if (menuBtn && drawer) {
+            menuBtn.addEventListener('click', () => {
+                drawer.classList.toggle('translate-x-full');
+                menuBtn.innerHTML = drawer.classList.contains('translate-x-full')
+                    ? '<span class="material-symbols-outlined">menu</span>'
+                    : '<span class="material-symbols-outlined">close</span>';
+            });
+        }
+
+        // FAB
+        const fabBtn = document.getElementById('fab-btn');
+        const fabPopup = document.getElementById('fab-popup');
+        if (fabBtn && fabPopup) {
+            fabBtn.addEventListener('click', () => {
+                fabPopup.classList.toggle('hidden');
+                fabPopup.classList.toggle('flex');
+            });
+        }
+
+        // ==== Global Logic ====
+        let currentLang = localStorage.getItem('lang') || 'en';
+        let translations = {};
+
+        async function initGlobal() {
+            try {
+                // Fetch translations directly
+                const transRes = await fetch('translations.json').then(r => r.json());
+                translations = transRes;
+                applyLanguage();
+                import('./events.js').then(m => m.applyEventTheme()).catch(e => console.error(e));
+            } catch (err) {
+                console.error("Global init error:", err);
+            }
+        }
+
+        function applyLanguage() {
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    if (el.hasAttribute('placeholder')) {
+                        el.placeholder = translations[currentLang][key];
+                        return;
+                    } else if (el.tagName === 'OPTION') {
+                        el.text = translations[currentLang][key];
+                        return;
+                    }
+                    if (translations[currentLang][key].includes('<')) { el.innerHTML = translations[currentLang][key]; } else { el.textContent = translations[currentLang][key]; }
+                }
+            });
+            const lt = document.getElementById('lang-toggle');
+            if(lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
+            const mlt = document.getElementById('mobile-lang-toggle');
+            if(mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
+        }
+
+        const langToggleBtn = document.getElementById('lang-toggle');
+        if(langToggleBtn) {
+            langToggleBtn.addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'ar' : 'en';
+                localStorage.setItem('lang', currentLang);
+                applyLanguage();
+            });
+        }
+
+        const mlangToggleBtn = document.getElementById('mobile-lang-toggle');
+        if(mlangToggleBtn) {
+            mlangToggleBtn.addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'ar' : 'en';
+                localStorage.setItem('lang', currentLang);
+                applyLanguage();
+            });
+        }
+
+
+
+        initGlobal();
+
+</script>
+</body>
+</html>

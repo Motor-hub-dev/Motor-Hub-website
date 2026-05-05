@@ -1,0 +1,103 @@
+/* events.css */
+
+/* Generic Egyptian Flag Gradient Border for National Holidays */
+.event-police-day::before,
+.event-sinai-liberation-day::before,
+.event-revolution-day::before,
+.event-armed-forces-day::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(to right, #ce1126 33%, #ffffff 33%, #ffffff 66%, #000000 66%);
+    z-index: 9999;
+}
+
+/* 1. Ramadan */
+.event-ramadan {
+    background-image: radial-gradient(circle at top right, rgba(212, 175, 55, 0.1), transparent 40%), url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M20 2c-8 0-14.5 6.5-14.5 14.5S12 31 20 31c2 0 4-.4 5.8-1.1C21.8 28.5 19 24.6 19 20s2.8-8.5 6.8-9.9C24 9.4 22 9 20 9c-6 0-11 5-11 11s5 11 11 11 11-5 11-11c0-.4 0-.8-.1-1.2C29 25.8 25 30 20 30c-5.5 0-10-4.5-10-10S14.5 10 20 10c1.7 0 3.3.4 4.7 1.1C22 13 20 16.2 20 20c0 3.8 2 7 4.7 8.9C23.3 29.6 21.7 30 20 30z" fill="%23d4af37" fill-opacity="0.05"/></svg>');
+}
+.event-ramadan .site-brand { text-shadow: 0 0 10px rgba(242, 202, 80, 0.5); }
+.event-ramadan #hero::after {
+    content: '🌙';
+    position: absolute;
+    top: 20%; right: 10%;
+    font-size: 8rem;
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+/* 2. Eid al-Fitr & 3. Eid al-Adha */
+.event-eid-al-fitr, .event-eid-al-adha {
+    background-image: radial-gradient(circle at top left, rgba(242, 202, 80, 0.15), transparent 50%);
+}
+.event-eid-al-fitr::after, .event-eid-al-adha::after {
+    content: '✨';
+    position: fixed;
+    top: 10%; left: 5%;
+    font-size: 4rem;
+    opacity: 0.2;
+    animation: pulse 3s infinite alternate;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* 4. Islamic New Year & 5. Mawlid al-Nabi */
+.event-islamic-new-year, .event-mawlid-al-nabi {
+    background-color: #111511; /* Slight green tint */
+}
+.event-islamic-new-year .site-brand, .event-mawlid-al-nabi .site-brand {
+    color: #4CAF50;
+    text-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+}
+
+/* 6. Coptic Christmas */
+.event-coptic-christmas {
+    background-image: radial-gradient(circle at top center, rgba(255, 215, 0, 0.1), transparent 60%);
+}
+.event-coptic-christmas #hero::after {
+    content: '⭐';
+    position: absolute;
+    top: 15%; left: 50%;
+    transform: translateX(-50%);
+    font-size: 6rem;
+    opacity: 0.15;
+    pointer-events: none;
+    animation: glow 4s infinite alternate;
+}
+
+/* 7. Easter & 8. Sham El Nessim */
+.event-easter, .event-sham-el-nessim {
+    background-image: radial-gradient(circle at bottom right, rgba(255, 182, 193, 0.1), transparent 40%), radial-gradient(circle at bottom left, rgba(144, 238, 144, 0.1), transparent 40%);
+}
+.event-easter .bg-primary, .event-sham-el-nessim .bg-primary {
+    background-color: #FFB6C1; /* Pastel Pink */
+    color: #131313;
+}
+.event-easter .text-primary, .event-sham-el-nessim .text-primary {
+    color: #FFB6C1;
+}
+
+/* 9. Police Day, 10. Sinai Liberation, 11. Revolution Day, 12. Armed Forces */
+.event-police-day .bg-primary,
+.event-sinai-liberation-day .bg-primary,
+.event-revolution-day .bg-primary,
+.event-armed-forces-day .bg-primary {
+    background-color: #ce1126; /* Egyptian Red */
+    color: white;
+}
+.event-police-day .text-primary,
+.event-sinai-liberation-day .text-primary,
+.event-revolution-day .text-primary,
+.event-armed-forces-day .text-primary {
+    color: #ce1126;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.1; }
+    100% { transform: scale(1.2); opacity: 0.3; }
+}
+@keyframes glow {
+    0% { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.2)); }
+    100% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); }
+}

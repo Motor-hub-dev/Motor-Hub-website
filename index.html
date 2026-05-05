@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Motor Hub - Elite Concierge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Metropolis:wght@400;500;700&family=Domine:wght@400;500;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#f2ca50",
+                        "primary-container": "#d4af37",
+                        background: "#131313",
+                        surface: "#131313",
+                        "on-surface": "#e5e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "outline-variant": "#4d4635"
+                    },
+                    fontFamily: {
+                        headline: ["Metropolis"],
+                        body: ["Domine"],
+                        label: ["Lexend"],
+                        display: "Metropolis"
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body { font-family: 'Manrope', sans-serif; }
+        .glass-nav { backdrop-filter: blur(20px); }
+        .hero-bg {
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.5s ease-in-out;
+        }
+        /* Premium toggle button style */
+        .nav-toggle-btn {
+            background: #1a1812;
+            border: 1px solid rgba(242, 202, 80, 0.4);
+            color: #f2ca50;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-toggle-btn:hover {
+            background: rgba(242, 202, 80, 0.1);
+            border-color: #f2ca50;
+            box-shadow: 0 0 10px rgba(242, 202, 80, 0.2);
+        }
+        /* Clickable brand */
+        .site-brand {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        /* Mobile-safe overflow */
+        html, body { overflow-x: hidden; max-width: 100vw; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+    <div class="fixed inset-0 pointer-events-none z-[-1] flex items-center justify-center opacity-5"><img src="background-logo.png" class="w-[80vw] max-w-[800px] object-contain"></div>
+    <!-- TopNavBar -->
+    <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
+        <!-- Clickable Logo/Brand -->
+        <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">
+            <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-8 md:h-10 object-contain" />
+        </a>
+
+        <!-- Desktop Nav -->
+        <div class="hidden md:flex gap-10 items-center">
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="favorites.html" data-i18n="nav_favorites">Favorites</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="trading.html" data-i18n="nav_trading">Sell / Trade</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="about.html" data-i18n="nav_about">About</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="contact.html" data-i18n="nav_contact">Contact</a>
+
+            <!-- Toggles -->
+            <button id="lang-toggle" class="nav-toggle-btn">AR</button>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="md:hidden text-primary p-1">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+    </nav>
+
+    <!-- Mobile Drawer (Hidden by default) -->
+    <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-28 px-6 pb-12">
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="favorites.html" data-i18n="nav_favorites">Favorites</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="trading.html" data-i18n="nav_trading">Sell / Trade</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="about.html" data-i18n="nav_about">About</a>
+        <a class="text-2xl font-bold uppercase text-white mb-12" href="contact.html" data-i18n="nav_contact">Contact</a>
+        <button id="mobile-lang-toggle" class="nav-toggle-btn text-left mb-4 w-fit">Switch to AR</button>
+    </div>
+
+    <!-- Hero Section -->
+    <main class="flex-grow flex flex-col">
+        <section id="hero" class="relative h-screen flex items-center justify-center overflow-hidden hero-bg bg-neutral-900">
+            <div class="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent"></div>
+            <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+                <span class="text-primary tracking-[0.2em] font-bold text-xs uppercase block mb-4" data-i18n="home_hero_subtitle">Elite Collection</span>
+                <h1 class="text-5xl md:text-8xl font-extrabold tracking-tighter leading-none mb-8" data-i18n="home_title">CONNECT WITH ELITE</h1>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="inventory.html" class="bg-primary text-background font-bold uppercase tracking-widest text-sm px-8 py-4 hover:brightness-110 transition-all" data-i18n="home_hero_explore">Explore Inventory</a>
+                    <a href="contact.html" class="border border-primary text-primary font-bold uppercase tracking-widest text-sm px-8 py-4 hover:bg-white/5 transition-all" data-i18n="home_hero_consult">Personal Consult</a>
+                </div>
+            </div>
+        </section>
+
+    <!-- Services Section -->
+    <section class="py-24 px-6 md:px-12 max-w-[1600px] mx-auto border-b border-outline-variant/30">
+        <div class="mb-16 tracking-widest text-primary text-xs uppercase font-bold text-center" data-i18n="services_label">Our Services</div>
+        <h2 class="text-4xl md:text-6xl font-extrabold tracking-tighter uppercase mb-16 text-center" data-i18n="services_title">End-to-End <span class="text-neutral-500">Automotive Excellence</span></h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Explore -->
+            <a href="inventory.html" class="flex flex-col group block bg-surface-container-low border border-transparent hover:border-primary transition-all p-8 md:p-12 h-full hover:-translate-y-2 duration-300">
+                <span class="material-symbols-outlined text-4xl text-primary mb-6 group-hover:scale-110 transition-transform">search</span>
+                <h3 class="text-2xl font-bold uppercase mb-4 text-white" data-i18n="services_explore_title">Explore Inventory</h3>
+                <p class="text-neutral-400 text-sm leading-relaxed mb-8 flex-grow" data-i18n="services_explore_desc">Discover an elite selection of premium, luxury, and high-performance vehicles curated for the ultimate driving experience.</p>
+                <div class="flex items-center gap-2 mt-auto text-primary text-xs tracking-widest uppercase font-bold">
+                    <span data-i18n="services_explore_link">View Models</span>
+                    <span class="material-symbols-outlined text-sm group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                </div>
+            </a>
+            
+            <!-- Trade -->
+            <a href="trading.html?mode=trade" class="flex flex-col group block bg-surface-container-low border border-transparent hover:border-primary transition-all p-8 md:p-12 h-full hover:-translate-y-2 duration-300">
+                <span class="material-symbols-outlined text-4xl text-primary mb-6 group-hover:scale-110 transition-transform">swap_calls</span>
+                <h3 class="text-2xl font-bold uppercase mb-4 text-white" data-i18n="services_trade_title">Trade-In Your Vehicle</h3>
+                <p class="text-neutral-400 text-sm leading-relaxed mb-8 flex-grow" data-i18n="services_trade_desc">Upgrade effortlessly. Use our trade in appraisal service to offset the cost of your newest premier acquisition.</p>
+                <div class="flex items-center gap-2 mt-auto text-primary text-xs tracking-widest uppercase font-bold">
+                    <span data-i18n="services_trade_link">Evaluate Now</span>
+                    <span class="material-symbols-outlined text-sm group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                </div>
+            </a>
+
+            <!-- Sell -->
+            <a href="trading.html?mode=sell" class="flex flex-col group block bg-surface-container-low border border-transparent hover:border-primary transition-all p-8 md:p-12 h-full hover:-translate-y-2 duration-300 relative overflow-hidden">
+                <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <span class="material-symbols-outlined text-4xl text-primary mb-6 group-hover:scale-110 transition-transform relative z-10">sell</span>
+                <h3 class="text-2xl font-bold uppercase mb-4 text-white relative z-10" data-i18n="services_sell_title">Sell Your Car</h3>
+                <p class="text-neutral-400 text-sm leading-relaxed mb-8 flex-grow relative z-10" data-i18n="services_sell_desc">Secure a competitive offer for your luxury vehicle. Experience our streamlined, discreet purchasing process.</p>
+                <div class="flex items-center gap-2 mt-auto text-primary text-xs tracking-widest uppercase font-bold relative z-10">
+                    <span data-i18n="services_sell_link">Start Process</span>
+                    <span class="material-symbols-outlined text-sm group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+        <!-- Gallery Section -->
+        <section class="py-24 px-4 md:px-12 max-w-[1600px] mx-auto w-full border-b border-outline-variant/30">
+            <header class="mb-16 flex flex-col items-center text-center">
+                <div class="tracking-widest text-primary text-xs uppercase font-bold mb-4" data-i18n="home_gallery_label">Gallery</div>
+                <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight uppercase" data-i18n="home_gallery_title">Masterpieces In Motion</h2>
+            </header>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                <!-- Main Gallery Window -->
+                <div class="flex flex-col items-center">
+                    <h3 class="text-2xl font-bold tracking-tight uppercase mb-6 text-white text-center" data-i18n="home_gallery_main">Main Gallery</h3>
+                    <div id="main-gallery-window" class="relative w-full aspect-[4/3] bg-surface-container-low rounded overflow-hidden border border-outline-variant/30 cursor-pointer group">
+                        <div id="main-gallery-container" class="w-full h-full relative">
+                            <p class="text-neutral-500 absolute inset-0 flex items-center justify-center">Loading...</p>
+                        </div>
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
+                            <span class="bg-primary text-black px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-full shadow-lg" data-i18n="home_gallery_view_full">View Full Gallery</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Satisfied Clients Window -->
+                <div class="flex flex-col items-center">
+                    <h3 class="text-2xl font-bold tracking-tight uppercase mb-6 text-white text-center" data-i18n="home_gallery_clients">Satisfied Clients</h3>
+                    <div id="clients-gallery-window" class="relative w-full aspect-[4/3] bg-surface-container-low rounded overflow-hidden border border-outline-variant/30 cursor-pointer group">
+                        <div id="clients-gallery-container" class="w-full h-full relative">
+                            <p class="text-neutral-500 absolute inset-0 flex items-center justify-center">Loading...</p>
+                        </div>
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
+                            <span class="bg-primary text-black px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-full shadow-lg" data-i18n="home_gallery_view_full">View Full Gallery</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Spotlight Gallery -->
+        <section class="py-24 px-4 md:px-12 max-w-[1600px] mx-auto w-full">
+            <header class="mb-16 flex justify-between items-end">
+                <div>
+                    <h2 class="text-4xl md:text-5xl font-bold tracking-tight uppercase" data-i18n="home_spotlight_title">Spotlight Collection</h2>
+                    <p class="text-outline-variant text-sm uppercase tracking-widest mt-2" data-i18n="home_spotlight_desc">Curated Masterpieces</p>
+                </div>
+                <a href="inventory.html" class="hidden md:flex items-center gap-2 text-primary text-sm uppercase tracking-widest hover:text-white transition-colors">
+                    <span data-i18n="home_spotlight_link">View All</span> <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+            </header>
+
+            <div id="spotlight-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                <!-- Spotlight items will be injected here via JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating FAB -->
+    <button id="fab-btn" class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-background rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50">
+        <span class="material-symbols-outlined">chat</span>
+    </button>
+
+    <!-- FAB Popup -->
+    <div id="fab-popup" class="fixed bottom-24 right-8 bg-surface-container-low border border-outline-variant p-4 rounded shadow-2xl hidden z-50 flex-col gap-4">
+        <a href="https://wa.me/123456789" target="_blank" class="flex items-center gap-3 text-white hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">chat_bubble</span> WhatsApp
+        </a>
+        <a href="tel:+123456789" class="flex items-center gap-3 text-white hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">call</span> Direct Call
+        </a>
+    </div>
+
+    <!-- Fullscreen Lightbox Modal -->
+    <div id="lightbox-modal" class="fixed inset-0 bg-black/95 z-[100] hidden flex flex-col backdrop-blur-sm">
+        <!-- Header -->
+        <div class="flex justify-between items-center p-4 md:p-6 text-white absolute top-0 w-full z-10 bg-gradient-to-b from-black/80 to-transparent">
+            <span id="lightbox-counter" class="text-sm font-bold tracking-widest text-primary">1 / 10</span>
+            <button id="lightbox-close" class="hover:text-primary transition-colors p-2">
+                <span class="material-symbols-outlined text-3xl">close</span>
+            </button>
+        </div>
+
+        <!-- Main Image Area -->
+        <div class="flex-grow flex items-center justify-center relative overflow-hidden px-12 md:px-24" id="lightbox-touch-area">
+            <img id="lightbox-image" src="" alt="Fullscreen Gallery Image" class="max-w-full max-h-[85vh] object-contain select-none transition-opacity duration-300" />
+
+            <!-- Navigation Buttons -->
+            <button id="lightbox-prev" class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-white/50 hover:text-white hover:scale-110 transition-all p-2 hidden sm:block">
+                <span class="material-symbols-outlined text-5xl">chevron_left</span>
+            </button>
+            <button id="lightbox-next" class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/50 hover:text-white hover:scale-110 transition-all p-2 hidden sm:block">
+                <span class="material-symbols-outlined text-5xl">chevron_right</span>
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getSettings, subscribeToSettings } from './settings.js';
+        import { getSpotlightVehicles } from './products.js';
+        import { getGalleryImages } from './gallery.js';
+
+        // State
+        let currentLang = localStorage.getItem('lang') || 'en';
+        let translations = {};
+
+        // Fetch Data on Load
+        async function init() {
+            try {
+                const [settings, spotlight, transRes, galleryImages] = await Promise.all([
+                    getSettings().catch(() => ({ hero_bg_url: '', usd_to_egp_rate: 50 })),
+                    getSpotlightVehicles().catch(() => []),
+                    fetch('translations.json').then(r => r.json()),
+                    getGalleryImages().catch(() => [])
+                ]);
+
+                translations = transRes;
+
+                // Set Hero BG
+                if (settings.hero_bg_url) {
+                    document.getElementById('hero').style.backgroundImage = `url('${settings.hero_bg_url}')`;
+                } else {
+                    document.getElementById('hero').style.backgroundImage = "url('https://images.unsplash.com/photo-1544829099-b9a0c07fad1a')"; // Fallback
+                }
+
+                // Helper to shuffle arrays
+                const shuffle = (array) => {
+                    const arr = [...array];
+                    for (let i = arr.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [arr[i], arr[j]] = [arr[j], arr[i]];
+                    }
+                    return arr;
+                };
+
+                renderSpotlight(spotlight);
+                renderGallery(shuffle(galleryImages), 'main');
+                renderGallery(shuffle(galleryImages), 'clients');
+                applyLanguage();
+                updateCurrencyDisplay();
+            } catch (err) {
+                console.error("Initialization error:", err);
+            }
+        }
+
+        // Setup Realtime Settings Subscription
+        subscribeToSettings((newSettings) => {
+            if (newSettings.hero_bg_url) {
+                document.getElementById('hero').style.backgroundImage = `url('${newSettings.hero_bg_url}')`;
+            }
+        });
+
+        // Helpers
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+
+        // Render Galleries & Auto-Rotation Logic
+        const galleryStates = {
+            main: { images: [], currentIndex: 0, containerId: 'main-gallery-container', intervalId: null },
+            clients: { images: [], currentIndex: 0, containerId: 'clients-gallery-container', intervalId: null }
+        };
+
+        function renderGallery(images, type) {
+            const state = galleryStates[type];
+            state.images = images || [];
+            const container = document.getElementById(state.containerId);
+
+            if (state.images.length === 0) {
+                container.innerHTML = '<p class="text-neutral-500 absolute inset-0 flex items-center justify-center">Coming soon.</p>';
+                return;
+            }
+
+            // Create image elements for smooth transition
+            container.innerHTML = state.images.map((img, idx) => `
+                <img
+                    src="${escapeHTML(img.image_url)}"
+                    alt="${type} Image ${idx + 1}"
+                    class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === 0 ? 'opacity-100' : 'opacity-0'}"
+                    loading="${idx === 0 ? 'eager' : 'lazy'}"
+                    data-idx="${idx}"
+                />
+            `).join('');
+
+            // Preload next image immediately
+            if (state.images.length > 1) {
+                const nextImg = new Image();
+                nextImg.src = state.images[1].image_url;
+            }
+
+            startAutoRotation(type);
+        }
+
+        function startAutoRotation(type) {
+            const state = galleryStates[type];
+            if (state.intervalId) clearInterval(state.intervalId);
+            if (state.images.length <= 1) return;
+
+            state.intervalId = setInterval(() => {
+                const container = document.getElementById(state.containerId);
+                if (!container) return; // safety check
+
+                const currentIdx = state.currentIndex;
+                const nextIdx = (currentIdx + 1) % state.images.length;
+
+                const currentImgEl = container.querySelector(`[data-idx="${currentIdx}"]`);
+                const nextImgEl = container.querySelector(`[data-idx="${nextIdx}"]`);
+
+                if (currentImgEl && nextImgEl) {
+                    currentImgEl.classList.remove('opacity-100');
+                    currentImgEl.classList.add('opacity-0');
+                    nextImgEl.classList.remove('opacity-0');
+                    nextImgEl.classList.add('opacity-100');
+                }
+
+                state.currentIndex = nextIdx;
+
+                // Preload the image after next to avoid flicker on slow networks
+                const preloadIdx = (nextIdx + 1) % state.images.length;
+                const preloadImg = new Image();
+                preloadImg.src = state.images[preloadIdx].image_url;
+
+            }, 3000);
+        }
+
+        // Spotlight Render
+        function renderSpotlight(vehicles) {
+            const grid = document.getElementById('spotlight-grid');
+            if (!vehicles || vehicles.length === 0) {
+                grid.innerHTML = '<p class="text-neutral-500">No spotlight vehicles available.</p>';
+                return;
+            }
+            grid.innerHTML = vehicles.map(v => `
+                <div class="group cursor-pointer" onclick="window.location.href='details.html?id=${escapeHTML(v.id)}'">
+                    <div class="relative overflow-hidden aspect-[16/10] bg-surface-container-low mb-6">
+                        <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="${escapeHTML(v.image_url)}" alt="${escapeHTML(v.name)}" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60"></div>
+                        ${v.is_sold_out ? '<div class="absolute inset-0 bg-black/50 flex items-center justify-center"><span class="bg-red-900 text-white px-4 py-2 text-xs font-bold uppercase">Sold Out</span></div>' : ''}
+                    </div>
+                    <div class="flex justify-between items-start gap-3">
+                        <div class="min-w-0">
+                            <h3 class="text-2xl font-bold tracking-tight uppercase text-white truncate">${escapeHTML(v.name)}</h3>
+                            <p class="text-outline-variant text-xs uppercase tracking-widest mt-1">${escapeHTML(v.version || '')}</p>
+                        </div>
+                        <span class="text-xl font-black text-primary price-display whitespace-nowrap" data-usd="${escapeHTML(String(v.price_usd || ''))}">${escapeHTML(formatPrice(v.price_usd))}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatPrice(usdPrice) {
+            if (!usdPrice) return 'Upon Request';
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(usdPrice);
+        }
+
+        function updateCurrencyDisplay() {
+            document.querySelectorAll('.price-display').forEach(el => {
+                const usd = parseFloat(el.getAttribute('data-usd'));
+                el.textContent = formatPrice(usd);
+            });
+        }
+
+        function applyLanguage() {
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    if (el.hasAttribute('placeholder')) {
+                        el.placeholder = translations[currentLang][key];
+                    } else if (el.tagName === 'OPTION') {
+                        el.text = translations[currentLang][key];
+                    } else {
+                        if (translations[currentLang][key].includes('<')) {
+                             el.innerHTML = translations[currentLang][key];
+                        } else {
+                             el.textContent = translations[currentLang][key];
+                        }
+                    }
+                }
+            });
+            const lt = document.getElementById('lang-toggle');
+            if(lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
+            const mlt = document.getElementById('mobile-lang-toggle');
+            if(mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
+        }
+
+        // Event Listeners
+        document.getElementById('lang-toggle').addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('lang', currentLang);
+            applyLanguage();
+        });
+
+        // Mobile Menu
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const drawer = document.getElementById('mobile-drawer');
+        menuBtn.addEventListener('click', () => {
+            drawer.classList.toggle('translate-x-full');
+            menuBtn.innerHTML = drawer.classList.contains('translate-x-full')
+                ? '<span class="material-symbols-outlined">menu</span>'
+                : '<span class="material-symbols-outlined">close</span>';
+        });
+
+        // Mobile toggles
+        const mobileLang = document.getElementById('mobile-lang-toggle');
+        if (mobileLang) {
+            mobileLang.addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'ar' : 'en';
+                localStorage.setItem('lang', currentLang);
+                applyLanguage();
+            });
+        }
+
+        // Lightbox State and Logic
+        const lightbox = {
+            isOpen: false,
+            images: [],
+            currentIndex: 0,
+            touchStartX: 0
+        };
+        const lightboxModal = document.getElementById('lightbox-modal');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxCounter = document.getElementById('lightbox-counter');
+
+        function openLightbox(type) {
+            const state = galleryStates[type];
+            if (!state || state.images.length === 0) return;
+
+            lightbox.images = state.images;
+            lightbox.currentIndex = 0; // Or state.currentIndex if you want to open exactly where it is
+
+            updateLightboxUI();
+            lightboxModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            lightbox.isOpen = true;
+        }
+
+        function closeLightbox() {
+            lightboxModal.classList.add('hidden');
+            document.body.style.overflow = '';
+            lightbox.isOpen = false;
+        }
+
+        function updateLightboxUI() {
+            if (lightbox.images.length === 0) return;
+            const img = lightbox.images[lightbox.currentIndex];
+
+            // Fade effect
+            lightboxImage.style.opacity = '0';
+            setTimeout(() => {
+                lightboxImage.src = img.image_url;
+                lightboxImage.onload = () => { lightboxImage.style.opacity = '1'; };
+                // Fallback if cached
+                if(lightboxImage.complete) lightboxImage.style.opacity = '1';
+            }, 150);
+
+            lightboxCounter.textContent = `${lightbox.currentIndex + 1} / ${lightbox.images.length}`;
+
+            // Preload next and prev
+            if (lightbox.images.length > 1) {
+                const nextIdx = (lightbox.currentIndex + 1) % lightbox.images.length;
+                const prevIdx = (lightbox.currentIndex - 1 + lightbox.images.length) % lightbox.images.length;
+                new Image().src = lightbox.images[nextIdx].image_url;
+                new Image().src = lightbox.images[prevIdx].image_url;
+            }
+        }
+
+        function lightboxNext() {
+            if (lightbox.images.length <= 1) return;
+            lightbox.currentIndex = (lightbox.currentIndex + 1) % lightbox.images.length;
+            updateLightboxUI();
+        }
+
+        function lightboxPrev() {
+            if (lightbox.images.length <= 1) return;
+            lightbox.currentIndex = (lightbox.currentIndex - 1 + lightbox.images.length) % lightbox.images.length;
+            updateLightboxUI();
+        }
+
+        // Lightbox Event Listeners
+        document.getElementById('main-gallery-window').addEventListener('click', () => openLightbox('main'));
+        document.getElementById('clients-gallery-window').addEventListener('click', () => openLightbox('clients'));
+
+        document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+        document.getElementById('lightbox-next').addEventListener('click', (e) => { e.stopPropagation(); lightboxNext(); });
+        document.getElementById('lightbox-prev').addEventListener('click', (e) => { e.stopPropagation(); lightboxPrev(); });
+
+        // Close on background click
+        lightboxModal.addEventListener('click', (e) => {
+            if (e.target === lightboxModal || e.target.id === 'lightbox-touch-area') {
+                closeLightbox();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.isOpen) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') lightboxNext();
+            if (e.key === 'ArrowLeft') lightboxPrev();
+        });
+
+        // Touch/Swipe support for mobile
+        const touchArea = document.getElementById('lightbox-touch-area');
+        touchArea.addEventListener('touchstart', (e) => {
+            lightbox.touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        touchArea.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const diff = lightbox.touchStartX - touchEndX;
+            // 50px threshold
+            if (diff > 50) lightboxNext(); // Swiped left
+            else if (diff < -50) lightboxPrev(); // Swiped right
+        }, {passive: true});
+
+        // FAB
+        const fabBtn = document.getElementById('fab-btn');
+        const fabPopup = document.getElementById('fab-popup');
+        fabBtn.addEventListener('click', () => {
+            fabPopup.classList.toggle('hidden');
+            fabPopup.classList.toggle('flex');
+        });
+
+        init();
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.error(err));
+        }
+    </script>
+</body>
+</html>

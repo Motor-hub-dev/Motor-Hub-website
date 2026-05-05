@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Motor Hub - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Metropolis:wght@400;500;700&family=Domine:wght@400;500;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#f2ca50",
+                        background: "#131313",
+                        surface: "#131313",
+                        "on-surface": "#e5e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "outline-variant": "#4d4635"
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+
+    <!-- Login Prompt (Visible when not authenticated) -->
+    <div id="login-view" class="flex-grow flex items-center justify-center p-6">
+        <div class="bg-surface-container-low border border-outline-variant p-8 max-w-md w-full shadow-2xl">
+            <h2 class="text-2xl font-bold uppercase mb-6 text-primary text-center">Admin Portal</h2>
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Email</label>
+                    <input id="login-email" required class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" type="email"/>
+                </div>
+                <div>
+                    <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Password</label>
+                    <input id="login-password" required class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" type="password"/>
+                </div>
+                <button type="submit" class="w-full bg-primary text-black font-bold uppercase tracking-widest py-3 hover:brightness-110">
+                    Authenticate
+                </button>
+                <p id="login-error" class="text-red-500 text-xs text-center hidden">Invalid credentials</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Generic Modal for Forms -->
+    <div id="crud-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div id="crud-modal-box" class="bg-[#131313] border border-outline-variant p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative rounded shadow-2xl">
+            <button id="close-crud-modal" class="absolute top-4 right-4 text-neutral-500 hover:text-white">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2 id="modal-title" class="text-2xl font-bold tracking-tight text-white mb-6 pb-4 border-b border-outline-variant">Form</h2>
+            <form id="crud-form" class="space-y-6">
+                <div id="crud-form-fields" class="space-y-6"></div>
+                <input type="hidden" id="crud-id" />
+                <input type="hidden" id="crud-type" />
+                <div class="flex justify-end border-t border-outline-variant pt-6 gap-4">
+                     <button type="button" id="cancel-crud" class="text-xs uppercase tracking-widest text-neutral-400 font-bold hover:text-white px-6">Cancel</button>
+                     <button type="submit" class="bg-primary text-black font-bold text-sm tracking-tight py-3 px-8 rounded hover:brightness-110">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard (Hidden by default) -->
+    <div id="dashboard-view" class="hidden flex-grow flex flex-col md:flex-row h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        <aside class="w-full md:w-64 bg-surface-container-low border-r border-outline-variant flex flex-col">
+            <div class="p-6 border-b border-outline-variant flex justify-between items-center">
+                <span class="font-black text-primary text-xl tracking-tighter">
+                    <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-8 object-contain" />
+                </span>
+                <button id="logout-btn" class="text-xs text-neutral-500 hover:text-white uppercase tracking-widest">Logout</button>
+            </div>
+            <nav class="flex-grow flex flex-col p-4 gap-2">
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-primary font-bold bg-white/5" data-target="tab-products">Products</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-brands">Brands</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-categories">Categories</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-inquiries" data-i18n="admin_inquiries">Inquiries</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-gallery" data-i18n="admin_gallery">Gallery</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-settings" data-i18n="admin_settings">Settings</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-events">Events</button>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-grow overflow-auto p-8 relative">
+
+            <!-- TAB: PRODUCTS -->
+            <section id="tab-products" class="tab-content block">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight text-white">Products Management</h2>
+                    <button id="btn-add-product" class="bg-primary text-black px-4 py-2 text-xs font-bold uppercase tracking-widest hover:brightness-110">Add Vehicle</button>
+                </div>
+                <div class="overflow-x-auto border border-outline-variant bg-surface-container-low">
+                    <table class="w-full text-left text-sm">
+                        <thead class="border-b border-outline-variant uppercase text-[10px] tracking-widest text-neutral-400">
+                            <tr>
+                                <th class="p-4 w-10"></th>
+                                <th class="p-4">Name</th>
+                                <th class="p-4">Price (EGP)</th>
+                                <th class="p-4">Status</th>
+                                <th class="p-4">Spotlight</th>
+                                <th class="p-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-tbody" class="divide-y divide-outline-variant/30 text-white">
+                            <tr><td colspan="5" class="p-4 text-center text-neutral-500">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB: BRANDS -->
+            <section id="tab-brands" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight text-white">Brands</h2>
+                    <button id="btn-add-brand" class="bg-primary text-black px-4 py-2 text-xs font-bold uppercase tracking-widest hover:brightness-110">Add Brand</button>
+                </div>
+                <div class="overflow-x-auto border border-outline-variant bg-surface-container-low">
+                    <table class="w-full text-left text-sm">
+                        <thead class="border-b border-outline-variant uppercase text-[10px] tracking-widest text-neutral-400">
+                            <tr><th class="p-4">Name</th><th class="p-4 text-right">Actions</th></tr>
+                        </thead>
+                        <tbody id="brands-tbody" class="divide-y divide-outline-variant/30 text-white">
+                            <tr><td colspan="2" class="p-4 text-center text-neutral-500">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB: CATEGORIES -->
+            <section id="tab-categories" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight text-white">Categories</h2>
+                    <button id="btn-add-category" class="bg-primary text-black px-4 py-2 text-xs font-bold uppercase tracking-widest hover:brightness-110">Add Category</button>
+                </div>
+                <div class="overflow-x-auto border border-outline-variant bg-surface-container-low">
+                    <table class="w-full text-left text-sm">
+                        <thead class="border-b border-outline-variant uppercase text-[10px] tracking-widest text-neutral-400">
+                            <tr><th class="p-4">Name (EN)</th><th class="p-4">Name (AR)</th><th class="p-4 text-right">Actions</th></tr>
+                        </thead>
+                        <tbody id="categories-tbody" class="divide-y divide-outline-variant/30 text-white">
+                            <tr><td colspan="3" class="p-4 text-center text-neutral-500">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB: GALLERY -->
+            <section id="tab-gallery" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold tracking-tight text-white">Gallery Management</h2>
+                </div>
+
+                <!-- Main Gallery -->
+                <div class="mb-12 border border-outline-variant rounded p-6">
+                    <div class="flex justify-between items-center mb-4 border-b border-outline-variant pb-4">
+                        <h3 class="text-lg font-bold uppercase tracking-widest text-primary" data-i18n="admin_main_gallery">Main Gallery</h3>
+                        <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2">
+                            <input type="file" id="upload-main-gallery" class="hidden" accept="image/*" multiple/>
+                            <button type="button" class="bg-surface-container-low border border-outline-variant text-white font-bold text-xs py-2 px-6 rounded-full hover:bg-white/5" onclick="document.getElementById('upload-main-gallery').click()" data-i18n="admin_select_images">Select Images</button>
+                            <button type="button" id="btn-save-main-gallery" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full" data-i18n="admin_save_gallery">Save Gallery</button>
+                        </div>
+                    </div>
+                    <div id="main-gallery-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <p class="text-neutral-500 text-sm col-span-full">Loading...</p>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB: INQUIRIES -->
+            <section id="tab-inquiries" class="tab-content hidden">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight text-white">Inquiries</h2>
+                    <div class="flex gap-4">
+                        <select id="inquiry-filter" class="bg-surface-container-low border border-outline-variant text-on-surface text-xs uppercase tracking-widest px-4 py-2 focus:ring-1 focus:ring-primary appearance-none" onchange="renderInquiriesTable()">
+                            <option value="all">All Inquiries</option>
+                            <option value="unread">Unread</option>
+                            <option value="read">Read</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto border border-outline-variant bg-surface-container-low">
+                    <table class="w-full text-left text-sm">
+                        <thead class="border-b border-outline-variant uppercase text-[10px] tracking-widest text-neutral-400">
+                            <tr><th class="p-4">Date</th><th class="p-4">Name</th><th class="p-4">Subject</th><th class="p-4">Status</th><th class="p-4 text-right">Actions</th></tr>
+                        </thead>
+                        <tbody id="inquiries-tbody" class="divide-y divide-outline-variant/30 text-white">
+                            <tr><td colspan="5" class="p-4 text-center text-neutral-500">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB: SETTINGS -->
+            <section id="tab-settings" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold tracking-tight text-white">Settings</h2>
+                </div>
+                <form id="settings-form" class="max-w-3xl border border-outline-variant rounded p-8 space-y-10">
+
+                    <!-- Hero Section -->
+                    <div class="space-y-4">
+                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Hero Section</h3>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2">Background Cover Photo (Upload File)</label>
+                            <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2 mb-2">
+                                <input type="file" id="set-hero-file" class="hidden" accept="image/*"/>
+                                <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-4 rounded-full" onclick="document.getElementById('set-hero-file').click()">Choose File</button>
+                                <span id="set-hero-name" class="text-xs text-neutral-400">No file chosen</span>
+                            </div>
+                            <input type="hidden" id="set-hero" value="" />
+                            <div id="set-hero-preview" class="hidden mt-2 p-2 bg-white/5 border border-outline-variant rounded inline-block"></div>
+                        </div>
+                    </div>
+
+                    <!-- Location & Map -->
+                    <div class="space-y-4">
+                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Location & Map</h3>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2">Google Maps Embed URL (or Iframe code)</label>
+                            <input id="set-map" type="text" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm font-mono" placeholder='<iframe src="...">' data-i18n="admin_placeholder_map" />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2">Location Pin Link (Google Maps Share Link)</label>
+                            <input id="set-pin" type="url" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="https://maps.app.goo.gl/..." data-i18n="admin_placeholder_pin" />
+                        </div>
+                    </div>
+
+                    <!-- Social Presence -->
+                    <div class="space-y-6">
+                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Social Presence</h3>
+                        
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 uppercase font-bold tracking-widest">Instagram</label>
+                            <input id="set-inst" type="url" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="https://instagram.com/..." />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 uppercase font-bold tracking-widest">Facebook</label>
+                            <input id="set-fb" type="url" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="https://facebook.com/..." />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 uppercase font-bold tracking-widest">TikTok</label>
+                            <input id="set-tk" type="url" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="https://tiktok.com/@..." />
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] text-neutral-400 mb-2 uppercase font-bold tracking-widest">WhatsApp Number</label>
+                                <input id="set-wa" type="tel" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="+123456789" data-i18n="admin_placeholder_phone" />
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-neutral-400 mb-2 uppercase font-bold tracking-widest">Phone Number</label>
+                                <input id="set-ph" type="tel" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="+123456789" data-i18n="admin_placeholder_phone" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-outline-variant mt-8">
+                        <p id="settings-toast" class="text-green-500 font-bold tracking-widest text-xs hidden uppercase">Settings Saved!</p>
+                        <button type="submit" id="btn-save-settings" class="bg-primary text-black font-bold tracking-tight rounded py-3 px-8 text-sm hover:brightness-110 ml-auto">Save Settings</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- TAB: EVENTS -->
+            <section id="tab-events" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight text-white">Events Themes</h2>
+                </div>
+                <form id="events-form" class="space-y-8 bg-surface-container-low border border-outline-variant rounded p-8">
+                    <div class="space-y-6">
+                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Active Event Theme</h3>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2">Select an event to apply a custom appearance globally</label>
+                            <select id="set-event" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm">
+                                <option value="none">No Event (Default Theme)</option>
+                                <optgroup label="Islamic Holidays">
+                                    <option value="ramadan">Ramadan</option>
+                                    <option value="eid-al-fitr">Eid al-Fitr</option>
+                                    <option value="eid-al-adha">Eid al-Adha</option>
+                                    <option value="islamic-new-year">Islamic New Year (Hijri New Year)</option>
+                                    <option value="mawlid-al-nabi">Mawlid al-Nabi</option>
+                                </optgroup>
+                                <optgroup label="Coptic Holidays">
+                                    <option value="coptic-christmas">Coptic Christmas (Jan 7)</option>
+                                    <option value="easter">Easter</option>
+                                    <option value="sham-el-nessim">Sham El Nessim</option>
+                                </optgroup>
+                                <optgroup label="National Holidays">
+                                    <option value="police-day">Police Day (Jan 25)</option>
+                                    <option value="sinai-liberation-day">Sinai Liberation Day (Apr 25)</option>
+                                    <option value="revolution-day">Revolution Day (Jul 23)</option>
+                                    <option value="armed-forces-day">Armed Forces Day (Oct 6)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pt-4 flex justify-between items-center border-t border-outline-variant mt-8">
+                        <p id="events-toast" class="text-green-500 font-bold tracking-widest text-xs hidden uppercase">Theme Applied!</p>
+                        <button type="submit" id="btn-save-events" class="bg-primary text-black font-bold tracking-tight rounded py-3 px-8 text-sm hover:brightness-110 ml-auto">Apply Theme</button>
+                    </div>
+                </form>
+            </section>
+
+        </main>
+    </div>
+
+    <script type="module">
+        import { supabase } from './supabaseClient.js';
+        import { getVehicles, createVehicle, updateVehicle, deleteVehicle } from './products.js';
+        import { getBrands, createBrand, updateBrand, deleteBrand } from './brands.js';
+        import { getCategories, createCategory, updateCategory, deleteCategory } from './categories.js';
+        import { getMessages, markMessageRead, markMessageUnread, deleteMessage } from './messages.js';
+        import { getSettings, updateSettings, subscribeToSettings } from './settings.js';
+        import { uploadImage } from './storage.js';
+        import { getGalleryImages, createGalleryImage, updateGalleryImage, deleteGalleryImage } from './gallery.js';
+
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+
+        // File listener for settings hero
+        document.getElementById('set-hero-file').addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (file) document.getElementById('set-hero-name').textContent = file.name;
+        });
+
+        // Modal State
+        const crudModal = document.getElementById('crud-modal');
+        const crudFormFields = document.getElementById('crud-form-fields');
+        const modalTitle = document.getElementById('modal-title');
+        const crudId = document.getElementById('crud-id');
+        const crudType = document.getElementById('crud-type');
+
+        // ==== AUTH LOGIC ====
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                loginView.classList.add('hidden');
+                dashboardView.classList.remove('hidden');
+                dashboardView.classList.add('flex');
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorEl = document.getElementById('login-error');
+
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                errorEl.classList.remove('hidden');
+            } else {
+                errorEl.classList.add('hidden');
+                checkAuth();
+                renderProductsTable(); // Initial load
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            loginView.classList.remove('hidden');
+            dashboardView.classList.add('hidden');
+            dashboardView.classList.remove('flex');
+        });
+
+        // ==== CRUD MODAL LOGIC ====
+
+        window.openModal = async function(type, id = null, dataStr = null) {
+            crudType.value = type;
+            crudId.value = id || '';
+            let data = dataStr ? JSON.parse(decodeURIComponent(dataStr)) : {};
+            
+            // Ensure submit button is visible (it might have been hidden by viewInquiry)
+            const submitBtn = document.querySelector('#crud-form button[type="submit"]');
+            if (submitBtn) submitBtn.style.display = 'block';
+
+            const modalBox = document.getElementById('crud-modal-box');
+            if (type === 'product') {
+                modalBox.classList.replace('max-w-xl', 'max-w-4xl');
+                modalTitle.textContent = id ? 'Edit Vehicle' : 'Add Vehicle';
+                
+                // Fetch dynamic dropdowns
+                const brs = await getBrands();
+                const cts = await getCategories();
+                const brandOpts = brs.map(b => `<option value="${b.id}" ${b.id === data.brand_id ? 'selected' : ''}>${escapeHTML(b.name)}</option>`).join('');
+                const catOpts = cts.map(c => `<option value="${c.id}" ${c.id === data.category_id ? 'selected' : ''}>${escapeHTML(c.name_en)}</option>`).join('');
+
+                crudFormFields.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        
+                        <!-- Col 1: Basic Info -->
+                        <div class="space-y-4">
+                            <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Basic Information</h3>
+                            <div>
+                                <label class="block text-[11px] text-neutral-400 mb-1">Vehicle Name (English)</label>
+                                <input id="f-name" required value="${escapeHTML(data.name || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Mercedes-Benz G63 AMG" />
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-neutral-400 mb-1">Vehicle Name (Arabic)</label>
+                                <input id="f-name-ar" dir="rtl" value="${escapeHTML(data.name_ar || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="مرسيدس جي 63" />
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Price (EGP)</label>
+                                    <input id="f-price-egp" type="number" value="${data.price_egp || ''}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="12500000" />
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Category</label>
+                                    <select id="f-cat" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm appearance-none">
+                                        <option value="">Select Category</option>
+                                        ${catOpts}
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-neutral-400 mb-1">Origin</label>
+                                <input id="f-origin" value="${escapeHTML(data.origin || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Imported" />
+                            </div>
+                        </div>
+
+                        <!-- Col 2: Specs -->
+                        <div class="space-y-4">
+                            <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Specifications</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Mileage</label>
+                                    <input id="f-mileage" type="number" value="${data.mileage !== undefined && data.mileage !== null ? data.mileage : ''}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="0" />
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Transmission</label>
+                                    <input id="f-transmission" value="${escapeHTML(data.transmission || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Automatic" />
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Fuel Type</label>
+                                    <input id="f-fuel" value="${escapeHTML(data.fuel_type || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Petrol" />
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Version</label>
+                                    <input id="f-version" value="${escapeHTML(data.version || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Standard" />
+                                </div>
+                                <div class="col-span-2 md:col-span-1">
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Year</label>
+                                    <input id="f-year" type="number" value="${data.year || ''}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="2024" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description Block -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 pt-8 border-t border-outline-variant">
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Description (English)</label>
+                            <textarea id="f-desc" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm h-32 resize-none">${escapeHTML(data.description || '')}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Description (Arabic)</label>
+                            <textarea id="f-desc-ar" dir="rtl" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm h-32 resize-none">${escapeHTML(data.description_ar || '')}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Images Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Main Thumbnail (Cover Photo)</label>
+                            <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2 mb-2">
+                                <input type="file" id="f-main-upload" class="hidden" accept="image/*"/>
+                                <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-4 rounded-full" onclick="document.getElementById('f-main-upload').click()">Choose File</button>
+                                <span id="f-main-label" class="text-xs text-neutral-400">No file chosen</span>
+                            </div>
+                            <input type="hidden" id="f-main-url" value="${escapeHTML(data.image_url || '')}"/>
+                            ${data.image_url ? `<img src="${escapeHTML(data.image_url)}" class="h-20 rounded object-cover mt-2 border border-outline-variant" />` : ''}
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Diagnostics (Optional)</label>
+                            <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2 mb-2 opacity-70">
+                                <input type="file" id="f-diag-upload" class="hidden" accept="application/pdf,image/*"/>
+                                <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-4 rounded-full opacity-50 cursor-not-allowed">Choose File</button>
+                                <span class="text-xs text-neutral-500">Attach Report (Disabled in UI mock)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 mt-8">
+                        <label class="block text-[11px] text-neutral-400 font-bold tracking-widest uppercase">Brand & Status</label>
+                        <select id="f-brand" class="w-1/3 bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm appearance-none mb-4">
+                            <option value="">Select Brand</option>
+                            ${brandOpts}
+                        </select>
+                        <div class="flex gap-6 items-center flex-wrap">
+                            <label class="flex items-center text-white text-sm font-bold cursor-pointer"><input type="checkbox" id="f-spot" ${data.is_spotlight ? 'checked' : ''} class="mr-2 text-primary focus:ring-primary bg-[#1c1b1b] border-[#2b2a2a] rounded"/> Spotlight (Home Page)</label>
+                            <label class="flex items-center text-white text-sm font-bold cursor-pointer"><input type="checkbox" id="f-req" ${data.upon_request ? 'checked' : ''} class="mr-2 text-primary focus:ring-primary bg-[#1c1b1b] border-[#2b2a2a] rounded"/> Upon Request</label>
+                            <label class="flex items-center text-red-400 text-sm font-bold cursor-pointer"><input type="checkbox" id="f-sold" ${data.is_sold_out ? 'checked' : ''} class="mr-2 text-red-500 focus:ring-red-500 bg-[#1c1b1b] border-[#2b2a2a] rounded"/> Mark as Sold Out</label>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Gallery Block -->
+                    <div id="v-gallery-block" class="mt-8 pt-8 border-t border-outline-variant space-y-4">
+                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest">Gallery Images</h3>
+                        <div class="border border-dashed border-outline-variant rounded p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5" onclick="document.getElementById('f-global-gallery').click()">
+                            <span class="material-symbols-outlined text-4xl text-neutral-500 mb-2">add_a_photo</span>
+                            <span class="text-sm font-bold text-neutral-400 mb-2">Click to upload multiple images</span>
+                            <input type="file" id="f-global-gallery" multiple class="hidden" accept="image/*" />
+                        </div>
+                        <div id="v-gallery-preview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4"></div>
+                    </div>
+                `;
+
+                // GLOBAL STATE FOR MODAL
+                window.modalGlobalGalleryUrls = data.gallery ? (typeof data.gallery === 'string' ? JSON.parse(data.gallery) : data.gallery) : (data.gallery_urls || []);
+                window.modalFilesQueue = []; // { type: 'gallery'|'color', cid: null, file: File }
+
+                // RENDER FUNCTIONS
+
+                const renderGlobalGallery = () => {
+                    const gg = document.getElementById('v-gallery-preview');
+                    if(!gg) return;
+                    let html = window.modalGlobalGalleryUrls.map((url, i) => `
+                        <div class="relative group cursor-move" draggable="true" ondragstart="window.dragStart(event, ${i}, 'global')" ondragover="event.preventDefault()" ondrop="window.dropGlobal(event, ${i})">
+                           <img src="${url}" class="h-20 w-full object-cover rounded border border-outline-variant pointer-events-none" />
+                           <button type="button" class="absolute top-1 right-1 bg-black/80 text-red-500 rounded p-1 hidden group-hover:block z-10" onclick="window.removeGlobalGallery(${i})"><span class="material-symbols-outlined text-[10px]">close</span></button>
+                        </div>
+                    `).join('');
+                    // Queue UI
+                    window.modalFilesQueue.filter(f => f.type === 'gallery').forEach((q) => {
+                        html += `<div class="relative opacity-50"><img src="${URL.createObjectURL(q.file)}" class="h-20 w-full object-cover rounded border border-primary" /><span class="absolute bottom-1 left-1 text-[8px] bg-black px-1 rounded text-primary uppercase font-bold tracking-widest">Pending</span></div>`;
+                    });
+                    gg.innerHTML = html;
+                };
+
+
+                window.removeGlobalGallery = (i) => { window.modalGlobalGalleryUrls.splice(i, 1); renderGlobalGallery(); };
+
+                window.dragStart = (event, index, type) => {
+                    event.dataTransfer.setData('index', index);
+                    event.dataTransfer.setData('type', type);
+                };
+                window.dropGlobal = (event, dropIndex) => {
+                    event.preventDefault();
+                    if(!event.dataTransfer.getData('index')) return;
+                    const dragIndex = parseInt(event.dataTransfer.getData('index'));
+                    const dragType = event.dataTransfer.getData('type');
+                    if (dragType !== 'global' || dragIndex === dropIndex) return;
+                    
+                    const item = window.modalGlobalGalleryUrls.splice(dragIndex, 1)[0];
+                    window.modalGlobalGalleryUrls.splice(dropIndex, 0, item);
+                    renderGlobalGallery();
+                };
+
+                // Handle file input text replacement instantly for UI
+                requestAnimationFrame(() => {
+                    document.getElementById('f-main-upload').addEventListener('change', e => {
+                        const file = e.target.files[0];
+                        if (file) document.getElementById('f-main-label').textContent = file.name;
+                    });
+
+                    const ggInput = document.getElementById('f-global-gallery');
+                    if (ggInput) {
+                        ggInput.addEventListener('change', (e) => {
+                            Array.from(e.target.files).forEach(file => window.modalFilesQueue.push({ type: 'gallery', file }));
+                            renderGlobalGallery();
+                        });
+                    }
+
+                    renderGlobalGallery();
+                });
+
+            } else if (type === 'brand') {
+                modalBox.classList.remove('max-w-4xl');
+                modalBox.classList.add('max-w-xl');
+                modalTitle.textContent = id ? 'Edit Brand' : 'Add Brand';
+                crudFormFields.innerHTML = `
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Brand Name</label>
+                            <input id="f-name" required value="${escapeHTML(data.name || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Audi" />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest mt-6">Logo</label>
+                            <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2">
+                                <input type="file" id="f-logo-file" class="hidden" accept="image/*"/>
+                                <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full" onclick="document.getElementById('f-logo-file').click()">Choose File</button>
+                                <span id="f-logo-name" class="text-xs text-neutral-400 truncate">No file chosen</span>
+                            </div>
+                            <input type="hidden" id="f-logo-url" value="${escapeHTML(data.logo_url || '')}"/>
+                            ${data.logo_url ? `<div class="mt-4 p-4 bg-white/5 rounded border border-[#2b2a2a] inline-block"><img src="${escapeHTML(data.logo_url)}" class="h-12 object-contain" /></div>` : ''}
+                        </div>
+                    </div>
+                `;
+
+                requestAnimationFrame(() => {
+                    document.getElementById('f-logo-file').addEventListener('change', e => {
+                        const file = e.target.files[0];
+                        if (file) document.getElementById('f-logo-name').textContent = file.name;
+                    });
+                });
+
+            } else if (type === 'category') {
+                modalBox.classList.remove('max-w-4xl');
+                modalBox.classList.add('max-w-xl');
+                modalTitle.textContent = id ? 'Edit Category' : 'Add Category';
+                crudFormFields.innerHTML = `
+                    <div class="space-y-4">
+                        <div><label class="block text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-2">Name (EN)</label><input id="f-name-en" required value="${data.name_en || ''}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3" /></div>
+                        <div><label class="block text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-2">Name (AR)</label><input id="f-name-ar" required dir="rtl" value="${data.name_ar || ''}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3" /></div>
+                    </div>
+                `;
+            }
+            crudModal.classList.remove('hidden');
+            crudModal.classList.add('flex');
+        }
+
+        window.deleteItem = async function(type, id) {
+            if(!confirm("Are you sure?")) return;
+            try {
+                if(type === 'product') { await deleteVehicle(id); renderProductsTable(); }
+                if(type === 'brand') { await deleteBrand(id); renderBrandsTable(); }
+                if(type === 'category') { await deleteCategory(id); renderCategoriesTable(); }
+            } catch(e) { alert("Delete failed."); }
+        }
+
+        document.getElementById('cancel-crud').addEventListener('click', () => {
+            crudModal.classList.add('hidden');
+            crudModal.classList.remove('flex');
+        });
+
+        document.getElementById('close-crud-modal').addEventListener('click', () => {
+            crudModal.classList.add('hidden');
+            crudModal.classList.remove('flex');
+            document.querySelector('#crud-form button[type="submit"]').style.display = 'block'; // reset
+        });
+
+        document.getElementById('crud-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const type = crudType.value;
+            const id = crudId.value;
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.textContent = "Saving...";
+            btn.disabled = true;
+
+            try {
+                if (type === 'product') {
+
+                    // Upload main image if a new one is selected
+                    const mainFileInput = document.getElementById('f-main-upload');
+                    let finalMainUrl = document.getElementById('f-main-url').value;
+                    if (mainFileInput && mainFileInput.files.length > 0) {
+                        btn.textContent = "Uploading Image...";
+                        finalMainUrl = await uploadImage(mainFileInput.files[0], 'uploads', 'vehicles');
+                        btn.textContent = "Saving Details...";
+                    }
+
+                    // Upload queued gallery and color files asynchronously
+                    if (window.modalFilesQueue && window.modalFilesQueue.length > 0) {
+                        btn.textContent = "Uploading gallery... (0/" + window.modalFilesQueue.length + ")";
+                        let completeCount = 0;
+                        // Concurrent uploads can crash cheap instances, sequentially safe
+                        for (let q of window.modalFilesQueue) {
+                            try {
+                                const url = await uploadImage(q.file, 'uploads', 'vehicles');
+                                if (q.type === 'gallery') window.modalGlobalGalleryUrls.push(url);
+
+                            } catch(e) { console.error('Upload failed for file', q.file.name); }
+                            completeCount++;
+                            btn.textContent = "Uploading gallery... (" + completeCount + "/" + window.modalFilesQueue.length + ")";
+                        }
+                        btn.textContent = "Saving Details...";
+                    }
+
+                    const payload = {
+                        name: document.getElementById('f-name').value,
+                        name_ar: document.getElementById('f-name-ar').value || null,
+                        price_egp: document.getElementById('f-price-egp').value ? parseFloat(document.getElementById('f-price-egp').value) : null,
+                        category_id: document.getElementById('f-cat').value || null,
+                        brand_id: document.getElementById('f-brand').value || null,
+                        origin: document.getElementById('f-origin').value || null,
+                        mileage: document.getElementById('f-mileage').value ? parseInt(document.getElementById('f-mileage').value) : null,
+                        transmission: document.getElementById('f-transmission').value || null,
+                        fuel_type: document.getElementById('f-fuel').value || null,
+                        version: document.getElementById('f-version').value || null,
+                        year: document.getElementById('f-year').value ? parseInt(document.getElementById('f-year').value) : null,
+                        description: document.getElementById('f-desc').value || null,
+                        description_ar: document.getElementById('f-desc-ar').value || null,
+                        image_url: finalMainUrl || null,
+                        gallery: window.modalGlobalGalleryUrls || [],
+
+                        is_spotlight: document.getElementById('f-spot').checked,
+                        upon_request: document.getElementById('f-req').checked,
+                        is_sold_out: document.getElementById('f-sold').checked
+                    };
+                    id ? await updateVehicle(id, payload) : await createVehicle(payload);
+                    renderProductsTable();
+                } else if (type === 'brand') {
+                    // Preflight upload
+                    const logoFileInput = document.getElementById('f-logo-file');
+                    let finalLogoUrl = document.getElementById('f-logo-url').value;
+                    if (logoFileInput && logoFileInput.files.length > 0) {
+                        btn.textContent = "Uploading Image...";
+                        finalLogoUrl = await uploadImage(logoFileInput.files[0], 'uploads', 'brands');
+                        btn.textContent = "Saving Details...";
+                    }
+
+                    const payload = { 
+                        name: document.getElementById('f-name').value,
+                        logo_url: finalLogoUrl || null
+                    };
+                    id ? await updateBrand(id, payload) : await createBrand(payload);
+                    renderBrandsTable();
+                } else if (type === 'category') {
+                    const payload = {
+                        name_en: document.getElementById('f-name-en').value,
+                        name_ar: document.getElementById('f-name-ar').value
+                    };
+                    id ? await updateCategory(id, payload) : await createCategory(payload);
+                    renderCategoriesTable();
+                }
+                document.getElementById('close-crud-modal').click();
+            } catch(err) {
+                console.error(err);
+                alert("Save failed. Double check inputs.");
+            } finally {
+                btn.textContent = "Save";
+                btn.disabled = false;
+            }
+        });
+
+        // Event listeners for static add buttons
+        document.querySelectorAll('button[id^="btn-add-"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const type = e.target.id.split('-')[2]; // btn-add-product -> product
+                window.openModal(type);
+            });
+        });
+
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+
+        // ==== DATA RENDERING ====
+
+        async function renderProductsTable() {
+            const tbody = document.getElementById('products-tbody');
+            tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-neutral-500">Loading...</td></tr>';
+            try {
+                const vehicles = await getVehicles();
+                if (vehicles.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-neutral-500">No products found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = vehicles.map((v, index) => `
+                    <tr class="hover:bg-white/5 transition-colors draggable-row" draggable="true" data-id="${escapeHTML(v.id)}" data-index="${index}">
+                        <td class="p-4 text-neutral-500 cursor-move">
+                            <span class="material-symbols-outlined">drag_indicator</span>
+                        </td>
+                        <td class="p-4 font-bold text-white">${escapeHTML(v.name)}</td>
+                        <td class="p-4 text-primary">${escapeHTML(v.price_egp ? '£' + v.price_egp.toLocaleString() : 'N/A')}</td>
+                        <td class="p-4">${v.is_sold_out ? '<span class="text-red-500 text-xs tracking-widest uppercase">Sold Out</span>' : '<span class="text-green-500 text-xs tracking-widest uppercase">Available</span>'}</td>
+                        <td class="p-4">${v.is_spotlight ? 'Yes' : 'No'}</td>
+                        <td class="p-4 flex gap-4 text-xs font-bold uppercase tracking-widest justify-end">
+                            <button class="text-blue-400 hover:text-blue-300 edit-btn" data-type="product" data-id="${escapeHTML(v.id)}">Edit</button>
+                            <button class="text-red-400 hover:text-red-300" onclick="window.deleteItem('product', '${escapeHTML(v.id)}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Attach edit handlers safely
+                tbody.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const v = vehicles.find(veh => veh.id === id);
+                        window.openModal('product', id, encodeURIComponent(JSON.stringify(v)));
+                    });
+                });
+
+                // Attach drag-and-drop handlers
+                let draggedRow = null;
+
+                tbody.querySelectorAll('.draggable-row').forEach(row => {
+                    row.addEventListener('dragstart', function() {
+                        draggedRow = this;
+                        setTimeout(() => this.classList.add('opacity-50'), 0);
+                    });
+
+                    row.addEventListener('dragend', function() {
+                        setTimeout(() => this.classList.remove('opacity-50'), 0);
+                        draggedRow = null;
+
+                        // Save new order
+                        const newOrder = Array.from(tbody.querySelectorAll('.draggable-row')).map((r, i) => ({
+                            id: r.getAttribute('data-id'),
+                            inventory_order: i
+                        }));
+
+                        // Update order in background
+                        Promise.all(newOrder.map(item => updateVehicle(item.id, { inventory_order: item.inventory_order })))
+                            .catch(err => console.error("Error updating order:", err));
+                    });
+
+                    row.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                    });
+
+                    row.addEventListener('dragenter', function(e) {
+                        e.preventDefault();
+                        this.classList.add('bg-white/10');
+                    });
+
+                    row.addEventListener('dragleave', function() {
+                        this.classList.remove('bg-white/10');
+                    });
+
+                    row.addEventListener('drop', function() {
+                        this.classList.remove('bg-white/10');
+                        if (this !== draggedRow) {
+                            let allRows = Array.from(tbody.querySelectorAll('.draggable-row'));
+                            let draggedIndex = allRows.indexOf(draggedRow);
+                            let targetIndex = allRows.indexOf(this);
+
+                            if (draggedIndex < targetIndex) {
+                                this.after(draggedRow);
+                            } else {
+                                this.before(draggedRow);
+                            }
+                        }
+                    });
+                });
+            } catch(e) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-red-500">Failed to load products.</td></tr>';
+            }
+        }
+
+        async function renderBrandsTable() {
+            const tbody = document.getElementById('brands-tbody');
+            tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-neutral-500">Loading...</td></tr>';
+            try {
+                const brands = await getBrands();
+                if (brands.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-neutral-500">No brands found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = brands.map(b => `
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="p-4 font-bold">${escapeHTML(b.name)}</td>
+                        <td class="p-4 flex gap-4 text-xs font-bold uppercase tracking-widest justify-end">
+                            <button class="text-blue-400 hover:text-blue-300 edit-btn" data-type="brand" data-id="${escapeHTML(b.id)}">Edit</button>
+                            <button class="text-red-400 hover:text-red-300" onclick="window.deleteItem('brand', '${escapeHTML(b.id)}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                tbody.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const b = brands.find(br => br.id === id);
+                        window.openModal('brand', id, encodeURIComponent(JSON.stringify(b)));
+                    });
+                });
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-red-500 text-center">Error loading</td></tr>'; }
+        }
+
+        async function renderCategoriesTable() {
+            const tbody = document.getElementById('categories-tbody');
+            tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-neutral-500">Loading...</td></tr>';
+            try {
+                const cats = await getCategories();
+                if (cats.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-neutral-500">No categories found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = cats.map(c => `
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="p-4 font-bold">${escapeHTML(c.name_en)}</td>
+                        <td class="p-4 text-neutral-400">${escapeHTML(c.name_ar)}</td>
+                        <td class="p-4 flex gap-4 text-xs font-bold uppercase tracking-widest justify-end">
+                            <button class="text-blue-400 hover:text-blue-300 edit-btn" data-type="category" data-id="${escapeHTML(c.id)}">Edit</button>
+                            <button class="text-red-400 hover:text-red-300" onclick="window.deleteItem('category', '${escapeHTML(c.id)}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                tbody.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const c = cats.find(cat => cat.id === id);
+                        window.openModal('category', id, encodeURIComponent(JSON.stringify(c)));
+                    });
+                });
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-red-500 text-center">Error loading</td></tr>'; }
+        }
+
+        async function renderInquiriesTable() {
+            const tbody = document.getElementById('inquiries-tbody');
+            const filterValue = document.getElementById('inquiry-filter') ? document.getElementById('inquiry-filter').value : 'all';
+            tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-neutral-500">Loading...</td></tr>';
+            try {
+                let msgs = await getMessages();
+
+                if (filterValue === 'unread') {
+                    msgs = msgs.filter(m => !m.is_read);
+                } else if (filterValue === 'read') {
+                    msgs = msgs.filter(m => m.is_read);
+                }
+
+                if (msgs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-neutral-500">No inquiries found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = msgs.map(m => `
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="p-4 text-neutral-400">${escapeHTML(new Date(m.created_at).toLocaleDateString())}</td>
+                        <td class="p-4 font-bold">${escapeHTML(m.name)}</td>
+                        <td class="p-4 text-neutral-300 truncate max-w-[200px]">${escapeHTML(m.subject)}</td>
+                        <td class="p-4">${m.is_read ? '<span class="text-neutral-500 text-[10px] tracking-widest uppercase font-bold">Read</span>' : '<span class="text-primary text-[10px] tracking-widest uppercase font-bold">Unread</span>'}</td>
+                        <td class="p-4 text-right flex justify-end items-center gap-4">
+                            <button class="text-xs text-white font-bold uppercase tracking-widest hover:text-primary" onclick="window.viewInquiry('${escapeHTML(m.id)}')">View</button>
+                            ${!m.is_read ? `<button class="text-xs text-primary font-bold uppercase tracking-widest hover:text-white" onclick="window.markRead('${escapeHTML(m.id)}')">Mark Read</button>` 
+                                         : `<button class="text-xs text-neutral-500 font-bold uppercase tracking-widest hover:text-white" onclick="window.markUnread('${escapeHTML(m.id)}')">Mark Unread</button>`}
+                            <button class="text-xs text-red-500 font-bold uppercase tracking-widest hover:text-red-400" onclick="window.deleteInquiry('${escapeHTML(m.id)}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-red-500 text-center">Error loading</td></tr>'; }
+        }
+
+        // Global fn for inline click
+        window.markRead = async function(id) {
+            try {
+                await markMessageRead(id);
+                renderInquiriesTable();
+            } catch(e) {
+                console.error("Failed to mark as read");
+            }
+        }
+        window.markUnread = async function(id) {
+            try {
+                await markMessageUnread(id);
+                renderInquiriesTable();
+            } catch(e) {
+                console.error("Failed to mark as unread");
+            }
+        }
+        window.deleteInquiry = async function(id) {
+            if(!confirm('Are you sure you want to delete this inquiry?')) return;
+            try {
+                await deleteMessage(id);
+                renderInquiriesTable();
+            } catch(e) {
+                console.error("Failed to delete inquiry");
+            }
+        }
+        
+        window.allInquiries = []; // cache array for view rendering
+        
+        window.viewInquiry = async function(id) {
+            const msgs = await getMessages();
+            const m = msgs.find(x => x.id === id);
+            if (!m) return;
+            // Parse message text, converting http links to anchor tags or images
+            let fMsg = escapeHTML(m.message || '').replace(/(https?:\/\/[^\s]+)/g, url => {
+                if(url.match(/\\.(jpeg|jpg|gif|png|webp|avif)$/i) || url.includes('supabase.co/storage')) {
+                    return `<a href="${url}" target="_blank" class="block my-2 border border-outline-variant p-1 rounded max-w-sm"><img src="${url}" class="w-full h-auto rounded" /></a>`;
+                }
+                return `<a href="${url}" target="_blank" class="text-primary underline">${url}</a>`;
+            });
+            // We use crud model to display read only view
+            document.getElementById('crud-type').value = 'view-inquiry';
+            document.getElementById('modal-title').textContent = 'Inquiry Details';
+            const modalBox = document.getElementById('crud-modal-box');
+            modalBox.classList.remove('max-w-4xl');
+            modalBox.classList.add('max-w-xl');
+            document.getElementById('crud-form-fields').innerHTML = `
+                <div class="space-y-4">
+                    <div><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Name</span><p class="text-white text-sm font-medium mt-1">${escapeHTML(m.name)}</p></div>
+                    <div><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Email</span><a href="mailto:${escapeHTML(m.email)}" class="text-primary text-sm font-medium mt-1">${escapeHTML(m.email)}</a></div>
+                    <div><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Phone</span><a href="tel:${escapeHTML(m.phone || '')}" class="text-primary text-sm font-medium mt-1">${escapeHTML(m.phone || 'N/A')}</a></div>
+                    <div><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Subject</span><p class="text-white text-sm font-medium mt-1">${escapeHTML(m.subject)}</p></div>
+                    <div class="border-t border-outline-variant pt-4"><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">Message Content</span><div class="text-neutral-300 text-sm whitespace-pre-wrap leading-relaxed">${fMsg}</div></div>
+                </div>
+            `;
+            // hide submit button
+            document.querySelector('#crud-form button[type="submit"]').style.display = 'none';
+            document.getElementById('crud-modal').classList.remove('hidden');
+            document.getElementById('crud-modal').classList.add('flex');
+            
+            // Mark read if unread automatically? Optional.
+            if (!m.is_read) {
+                window.markRead(m.id);
+            }
+        };
+
+        async function renderSettingsForm() {
+            try {
+                const set = await getSettings();
+                document.getElementById('set-hero').value = set.hero_bg_url || '';
+                
+                const previewBlock = document.getElementById('set-hero-preview');
+                if (set.hero_bg_url) {
+                    previewBlock.classList.remove('hidden');
+                    previewBlock.innerHTML = `<img src="${escapeHTML(set.hero_bg_url)}" class="h-16 rounded object-cover" />`;
+                } else {
+                    previewBlock.classList.add('hidden');
+                }
+                
+                // Allow iframe block extraction for embed link or raw text
+                document.getElementById('set-map').value = set.map_embed_url || '';
+
+                
+                document.getElementById('set-pin').value = set.location_pin_link || '';
+                document.getElementById('set-inst').value = set.instagram_link || '';
+                document.getElementById('set-fb').value = set.facebook_link || '';
+                document.getElementById('set-tk').value = set.tiktok_link || '';
+                document.getElementById('set-wa').value = set.whatsapp_number || '';
+                document.getElementById('set-ph').value = set.phone_number || '';
+            } catch(e) { console.error('Error loading settings', e); }
+        }
+
+        // Setup Realtime Settings Subscription
+        subscribeToSettings((newSettings) => {
+            console.log("Settings updated in real-time:", newSettings);
+            // If the settings tab is currently visible, refresh the form values
+            if (document.getElementById('tab-settings').classList.contains('block')) {
+                renderSettingsForm();
+            }
+        });
+
+        document.getElementById('settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const toast = document.getElementById('settings-toast');
+            const saveBtn = document.getElementById('btn-save-settings');
+            
+            // Extract src if iframe is provided for map
+            let mapVal = document.getElementById('set-map').value;
+            if (mapVal.includes('<iframe') && mapVal.includes('src="')) {
+                const match = mapVal.match(/src="([^"]+)"/);
+                if (match && match[1]) mapVal = match[1];
+            }
+
+            try {
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Uploading...';
+
+                // Check for Hero file upload
+                const heroFileIn = document.getElementById('set-hero-file');
+                let finalHeroUrl = document.getElementById('set-hero').value;
+                if (heroFileIn && heroFileIn.files.length > 0) {
+                    finalHeroUrl = await uploadImage(heroFileIn.files[0], 'uploads', 'settings');
+                    document.getElementById('set-hero').value = finalHeroUrl;
+                }
+
+                await updateSettings({
+                    hero_bg_url: finalHeroUrl,
+                    map_embed_url: mapVal,
+                    location_pin_link: document.getElementById('set-pin').value,
+                    instagram_link: document.getElementById('set-inst').value,
+                    facebook_link: document.getElementById('set-fb').value,
+                    tiktok_link: document.getElementById('set-tk').value,
+                    whatsapp_number: document.getElementById('set-wa').value,
+                    phone_number: document.getElementById('set-ph').value
+                });
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.add('hidden'), 3000);
+            } catch(e) {
+                alert("Failed to update settings");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Settings';
+                renderSettingsForm(); // Refresh view
+            }
+        });
+
+        // ==== EVENTS TAB LOGIC ====
+        async function renderEventsForm() {
+            try {
+                const settings = await getSettings();
+                document.getElementById('set-event').value = settings.active_event || 'none';
+            } catch(e) {
+                console.error("Failed to load events", e);
+            }
+        }
+
+        document.getElementById('events-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-events');
+            btn.disabled = true;
+            btn.textContent = 'Applying...';
+            try {
+                await updateSettings({
+                    active_event: document.getElementById('set-event').value
+                });
+                const toast = document.getElementById('events-toast');
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.add('hidden'), 3000);
+            } catch(e) {
+                alert("Failed to apply theme");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Apply Theme';
+            }
+        });
+
+        // ==== GALLERY TAB LOGIC ====
+
+        // Local state for queueing changes before saving
+        const galleryState = {
+            main: { current: [], filesToUpload: [], idsToDelete: [] }
+        };
+
+        async function renderGalleryTab() {
+            // Load fresh from DB
+            try {
+                galleryState.main.current = await getGalleryImages();
+                galleryState.main.filesToUpload = [];
+                galleryState.main.idsToDelete = [];
+            } catch (e) { galleryState.main.current = []; }
+
+            renderMainGallery();
+        }
+
+        function renderMainGallery() {
+            const grid = document.getElementById('main-gallery-grid');
+            const images = galleryState.main.current.filter(img => !galleryState.main.idsToDelete.includes(img.id));
+            const newFiles = galleryState.main.filesToUpload;
+
+            if (images.length === 0 && newFiles.length === 0) {
+                grid.innerHTML = '<p class="text-neutral-500 text-sm col-span-full">No images found.</p>';
+                return;
+            }
+
+            let html = images.map(img => `
+                <div data-id="${img.id}" class="relative group aspect-square rounded overflow-hidden border border-outline-variant">
+                    <img src="${escapeHTML(img.image_url)}" class="w-full h-full object-cover" />
+                    <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.queueDelMainGallery('${escapeHTML(img.id)}')"><span class="material-symbols-outlined text-[14px]">delete</span></button>
+                </div>
+            `).join('');
+
+            html += newFiles.map((file, idx) => `
+                <div data-idx="${idx}" class="relative group aspect-square rounded overflow-hidden border border-primary/50 opacity-70">
+                    <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover" />
+                    <span class="absolute bottom-1 left-1 text-[8px] bg-black px-1 rounded text-primary uppercase font-bold tracking-widest z-10">Pending</span>
+                    <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.removePendingMainGallery(${idx})"><span class="material-symbols-outlined text-[14px]">close</span></button>
+                </div>
+            `).join('');
+
+            grid.innerHTML = html;
+            setTimeout(() => {
+                if (window.mainGallerySortable) window.mainGallerySortable.destroy();
+                window.mainGallerySortable = Sortable.create(grid, { animation: 150 });
+            }, 100);
+        }
+
+
+
+        window.queueDelMainGallery = function(id) {
+            galleryState.main.idsToDelete.push(id);
+            renderMainGallery();
+        };
+
+        window.removePendingMainGallery = function(idx) {
+            galleryState.main.filesToUpload.splice(idx, 1);
+            renderMainGallery();
+        };
+
+        document.getElementById('upload-main-gallery').addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                galleryState.main.filesToUpload.push(...files);
+                renderMainGallery();
+            }
+            e.target.value = ''; // Reset input
+        });
+
+        document.getElementById('btn-save-main-gallery').addEventListener('click', async (e) => {
+            const btn = e.target;
+            const origText = btn.textContent;
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+
+            try {
+                const grid = document.getElementById('main-gallery-grid');
+                const children = Array.from(grid.children);
+                let orderIdx = 0;
+
+                const orderedUpdates = [];
+
+                for (let child of children) {
+                    const id = child.getAttribute('data-id');
+                    if (id && id !== "undefined") {
+                        orderedUpdates.push({ type: 'existing', id: id, order_index: orderIdx++ });
+                    } else if (child.getAttribute('data-idx')) {
+                        const idx = parseInt(child.getAttribute('data-idx'));
+                        orderedUpdates.push({ type: 'new', file: galleryState.main.filesToUpload[idx], order_index: orderIdx++ });
+                    }
+                }
+
+                for (let id of galleryState.main.idsToDelete) {
+                    await deleteGalleryImage(id);
+                }
+
+                for (let update of orderedUpdates) {
+                    if (update.type === 'existing') {
+                        await updateGalleryImage(update.id, { order_index: update.order_index });
+                    } else if (update.type === 'new') {
+                        const url = await uploadImage(update.file, 'gallery-images');
+                        await createGalleryImage({ image_url: url, order_index: update.order_index });
+                    }
+                }
+
+                galleryState.main.current = await getGalleryImages();
+                galleryState.main.filesToUpload = [];
+                galleryState.main.idsToDelete = [];
+                renderMainGallery();
+            } catch (err) {
+                alert('Save failed');
+                console.error(err);
+            } finally {
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        });
+
+
+
+        // ==== TAB LOGIC ====
+        document.querySelectorAll('.nav-tab').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Reset all tabs
+                document.querySelectorAll('.nav-tab').forEach(b => {
+                    b.classList.remove('text-primary', 'bg-white/5');
+                    b.classList.add('text-neutral-400');
+                });
+                document.querySelectorAll('.tab-content').forEach(c => {
+                    c.classList.add('hidden');
+                    c.classList.remove('block');
+                });
+
+                // Activate clicked
+                const target = e.target.getAttribute('data-target');
+                e.target.classList.add('text-primary', 'bg-white/5');
+                e.target.classList.remove('text-neutral-400');
+                document.getElementById(target).classList.remove('hidden');
+                document.getElementById(target).classList.add('block');
+
+                // Load Data dynamically when tab is opened
+                if(target === 'tab-products') renderProductsTable();
+                if(target === 'tab-brands') renderBrandsTable();
+                if(target === 'tab-categories') renderCategoriesTable();
+                if(target === 'tab-inquiries') renderInquiriesTable();
+                if(target === 'tab-settings') renderSettingsForm();
+                if(target === 'tab-gallery') renderGalleryTab();
+                if(target === 'tab-events') renderEventsForm();
+            });
+        });
+
+        // Init
+        checkAuth().then(() => {
+            if(!document.getElementById('dashboard-view').classList.contains('hidden')) {
+                renderProductsTable();
+            }
+        });
+    </script>
+
+    <!-- Translation Script -->
+    <script>
+        let currentLang = localStorage.getItem('lang') || 'en';
+        let translations = {};
+
+        async function initAdminTranslations() {
+            try {
+                translations = await fetch('translations.json').then(r => r.json());
+                applyAdminLanguage();
+            } catch(e) { console.error(e); }
+        }
+
+        function applyAdminLanguage() {
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    if (el.hasAttribute('placeholder')) {
+                        el.placeholder = translations[currentLang][key];
+                    } else if (el.tagName === 'OPTION') {
+                        el.text = translations[currentLang][key];
+                    } else {
+                        if (translations[currentLang][key].includes('<')) {
+                             el.innerHTML = translations[currentLang][key];
+                        } else {
+                             el.textContent = translations[currentLang][key];
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', initAdminTranslations);
+    </script>
+</body>
+
+</html>
