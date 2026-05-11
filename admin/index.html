@@ -75,7 +75,7 @@
         <aside class="w-full md:w-64 bg-surface-container-low border-r border-outline-variant flex flex-col">
             <div class="p-6 border-b border-outline-variant flex justify-between items-center">
                 <span class="font-black text-primary text-xl tracking-tighter">
-                    <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-8 object-contain" />
+                    <img src="/motor-hub-logo.png" alt="Motor Hub Logo" class="h-8 object-contain" />
                 </span>
                 <button id="logout-btn" class="text-xs text-neutral-500 hover:text-white uppercase tracking-widest">Logout</button>
             </div>
@@ -317,14 +317,14 @@
     </div>
 
     <script type="module">
-        import { supabase } from './supabaseClient.js';
-        import { getVehicles, createVehicle, updateVehicle, deleteVehicle } from './products.js';
-        import { getBrands, createBrand, updateBrand, deleteBrand } from './brands.js';
-        import { getCategories, createCategory, updateCategory, deleteCategory } from './categories.js';
-        import { getMessages, markMessageRead, markMessageUnread, deleteMessage } from './messages.js';
-        import { getSettings, updateSettings, subscribeToSettings } from './settings.js';
-        import { uploadImage } from './storage.js';
-        import { getGalleryImages, createGalleryImage, updateGalleryImage, deleteGalleryImage } from './gallery.js';
+        import { supabase } from '/supabaseClient.js';
+        import { getVehicles, createVehicle, updateVehicle, deleteVehicle } from '/products.js';
+        import { getBrands, createBrand, updateBrand, deleteBrand } from '/brands.js';
+        import { getCategories, createCategory, updateCategory, deleteCategory } from '/categories.js';
+        import { getMessages, markMessageRead, markMessageUnread, deleteMessage } from '/messages.js';
+        import { getSettings, updateSettings, subscribeToSettings } from '/settings.js';
+        import { uploadImage } from '/storage.js';
+        import { getGalleryImages, createGalleryImage, updateGalleryImage, deleteGalleryImage } from '/gallery.js';
 
         const loginView = document.getElementById('login-view');
         const dashboardView = document.getElementById('dashboard-view');
@@ -1291,7 +1291,7 @@
 
         async function initAdminTranslations() {
             try {
-                translations = await fetch('translations.json').then(r => r.json());
+                translations = await fetch('/translations.json').then(r => r.json());
                 applyAdminLanguage();
             } catch(e) { console.error(e); }
         }

@@ -118,18 +118,18 @@
         <!-- Logo/Brand -->
         <div class="relative flex items-center justify-center">
             <!-- Invisible box right in the middle that returns to home page -->
-            <a href="index.html" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 z-10 cursor-pointer peer" aria-label="Home"></a>
+            <a href="/" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 z-10 cursor-pointer peer" aria-label="Home"></a>
             <!-- Bigger logo -->
-            <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-12 md:h-16 object-contain transition-opacity peer-hover:opacity-80" />
+            <img src="/motor-hub-logo.png" alt="Motor Hub Logo" class="h-12 md:h-16 object-contain transition-opacity peer-hover:opacity-80" />
         </div>
 
         <!-- Desktop Nav -->
         <div class="hidden md:flex gap-10 items-center">
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="favorites.html" data-i18n="nav_favorites">Favorites</a>
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="trading.html" data-i18n="nav_trading">Sell / Trade</a>
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="about.html" data-i18n="nav_about">About</a>
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="contact.html" data-i18n="nav_contact">Contact</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="/inventory/" data-i18n="nav_inventory">Inventory</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="/favorites/" data-i18n="nav_favorites">Favorites</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="/trading/" data-i18n="nav_trading">Sell / Trade</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="/about/" data-i18n="nav_about">About</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="/contact/" data-i18n="nav_contact">Contact</a>
 
             <!-- Toggles -->
             <button id="lang-toggle" class="nav-toggle-btn">AR</button>
@@ -143,11 +143,11 @@
 
     <!-- Mobile Drawer (Hidden by default) -->
     <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-28 px-6 pb-12">
-        <a class="text-2xl font-bold uppercase text-white mb-6" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
-        <a class="text-2xl font-bold uppercase text-white mb-6" href="favorites.html" data-i18n="nav_favorites">Favorites</a>
-        <a class="text-2xl font-bold uppercase text-white mb-6" href="trading.html" data-i18n="nav_trading">Sell / Trade</a>
-        <a class="text-2xl font-bold uppercase text-white mb-6" href="about.html" data-i18n="nav_about">About</a>
-        <a class="text-2xl font-bold uppercase text-white mb-12" href="contact.html" data-i18n="nav_contact">Contact</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="/inventory/" data-i18n="nav_inventory">Inventory</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="/favorites/" data-i18n="nav_favorites">Favorites</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="/trading/" data-i18n="nav_trading">Sell / Trade</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="/about/" data-i18n="nav_about">About</a>
+        <a class="text-2xl font-bold uppercase text-white mb-12" href="/contact/" data-i18n="nav_contact">Contact</a>
         <button id="mobile-lang-toggle" class="nav-toggle-btn text-left mb-4 w-fit">Switch to AR</button>
     </div>
 
@@ -226,8 +226,8 @@
     </main>
 
     <script type="module">
-        import { createMessage } from './messages.js';
-        import { getSettings } from './settings.js';
+        import { createMessage } from '/messages.js';
+        import { getSettings } from '/settings.js';
 
         async function init() {
             const fallbackUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.080512877395!2d-0.1466031842298642!3d51.51174627963625!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487604d502268421%3A0x6a7d62889992f993!2sMayfair%2C%20London!5e0!3m2!1sen!2suk!4v1620000000000!5m2!1sen!2suk";
@@ -389,7 +389,7 @@
         async function initGlobal() {
             try {
                 // Fetch translations directly
-                const transRes = await fetch('translations.json').then(r => r.json());
+                const transRes = await fetch('/translations.json').then(r => r.json());
                 translations = transRes;
                 applyLanguage();
                 import('./events.js').then(m => m.applyEventTheme()).catch(e => console.error(e));

@@ -1,12 +1,12 @@
 const fs = require('fs');
 
 const htmlFiles = [
-    'inventory.html',
-    'about.html',
-    'contact.html',
-    'favorites.html',
-    'details.html',
-    'trading.html'
+    'inventory/index.html',
+    'about/index.html',
+    'contact/index.html',
+    'favorites/index.html',
+    'details/index.html',
+    'trading/index.html'
 ];
 
 const indexHtml = fs.readFileSync('index.html', 'utf8');
@@ -95,16 +95,16 @@ if (navMatch && drawerMatch && fabMatch) {
         if (currNavMatch) {
             let newFileNavMatch = currNavMatch[0].replace(/text-primary border-b-2 border-primary pb-1/g, 'text-neutral-400 hover:text-white transition-colors'); // Reset all
 
-            if (file === 'inventory.html' || file === 'details.html') {
-                newFileNavMatch = newFileNavMatch.replace(/href="inventory.html" class="[^"]*"/, 'href="inventory.html" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
-            } else if (file === 'about.html') {
-                newFileNavMatch = newFileNavMatch.replace(/href="about.html" class="[^"]*"/, 'href="about.html" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
-            } else if (file === 'contact.html') {
-                newFileNavMatch = newFileNavMatch.replace(/href="contact.html" class="[^"]*"/, 'href="contact.html" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
-            } else if (file === 'favorites.html') {
-                newFileNavMatch = newFileNavMatch.replace(/href="favorites.html" class="[^"]*"/, 'href="favorites.html" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
-            } else if (file === 'trading.html') {
-                newFileNavMatch = newFileNavMatch.replace(/href="trading.html" class="[^"]*"/, 'href="trading.html" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
+            if (file === 'inventory/index.html' || file === 'details/index.html') {
+                newFileNavMatch = newFileNavMatch.replace(/href="\/inventory\/" class="[^"]*"/, 'href="/inventory/" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
+            } else if (file === 'about/index.html') {
+                newFileNavMatch = newFileNavMatch.replace(/href="\/about\/" class="[^"]*"/, 'href="/about/" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
+            } else if (file === 'contact/index.html') {
+                newFileNavMatch = newFileNavMatch.replace(/href="\/contact\/" class="[^"]*"/, 'href="/contact/" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
+            } else if (file === 'favorites/index.html') {
+                newFileNavMatch = newFileNavMatch.replace(/href="\/favorites\/" class="[^"]*"/, 'href="/favorites/" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
+            } else if (file === 'trading/index.html') {
+                newFileNavMatch = newFileNavMatch.replace(/href="\/trading\/" class="[^"]*"/, 'href="/trading/" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
             }
 
             content = content.replace(currNavMatch[0], newFileNavMatch);
