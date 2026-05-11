@@ -94,7 +94,7 @@
             <!-- Invisible box right in the middle that returns to home page -->
             <a href="/" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 z-10 cursor-pointer peer" aria-label="Home"></a>
             <!-- Bigger logo -->
-            <img src="/motor-hub-logo.png" alt="Motor Hub Logo" class="h-12 md:h-16 object-contain transition-opacity peer-hover:opacity-80" />
+            <img src="/motor-hub-logo.png" alt="Motor Hub Logo" class="h-[70px] md:h-[92px] object-contain transition-opacity peer-hover:opacity-80" />
         </div>
 
         <!-- Desktop Nav -->
@@ -143,9 +143,9 @@
         const grid = document.getElementById('favorites-grid');
         let allVehicles = [];
 
-        function formatPrice(usdPrice) {
-            if (!usdPrice) return 'Upon Request';
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(usdPrice);
+        function formatPrice(egpPrice) {
+            if (!egpPrice) return 'Upon Request';
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EGP', maximumFractionDigits: 0 }).format(egpPrice);
         }
 
         async function init() {
@@ -205,7 +205,7 @@
                 const eName = escapeHTML(v.name);
                 const eImg = escapeHTML(v.image_url);
                 const eVersion = escapeHTML(v.version || 'Base');
-                const ePrice = formatPrice(v.price_usd);
+                const ePrice = formatPrice(v.price_egp);
 
                 return `
                 <div class="group relative" id="fav-card-${eId}">
@@ -223,7 +223,7 @@
                             <h3 class="text-3xl font-bold tracking-tight uppercase text-white truncate">${eName}</h3>
                             <p class="text-outline-variant text-sm uppercase tracking-widest mt-1">${eVersion}</p>
                         </div>
-                        <span class="text-xl font-black text-primary whitespace-nowrap fav-price-display" data-usd="${escapeHTML(String(v.price_usd || ''))}">${escapeHTML(ePrice)}</span>
+                        <span class="text-xl font-black text-primary whitespace-nowrap fav-price-display" data-egp="${escapeHTML(String(v.price_egp || ''))}">${escapeHTML(ePrice)}</span>
                     </div>
                 </div>
             `}).join('');
@@ -232,8 +232,8 @@
 
         window._updateFavPrices = function() {
             document.querySelectorAll('.fav-price-display').forEach(el => {
-                const usd = parseFloat(el.getAttribute('data-usd'));
-                el.textContent = formatPrice(usd);
+                const egp = parseFloat(el.getAttribute('data-egp'));
+                el.textContent = formatPrice(egp);
             });
         };
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'motor-hub-images-v2';
+const CACHE_NAME = 'motor-hub-images-v3';
 
 self.addEventListener('install', event => {
   self.skipWaiting();

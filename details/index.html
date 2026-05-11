@@ -100,7 +100,7 @@
             <!-- Invisible box right in the middle that returns to home page -->
             <a href="/" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 z-10 cursor-pointer peer" aria-label="Home"></a>
             <!-- Bigger logo -->
-            <img src="/motor-hub-logo.png" alt="Motor Hub Logo" class="h-12 md:h-16 object-contain transition-opacity peer-hover:opacity-80" />
+            <img src="/motor-hub-logo.png" alt="Motor Hub Logo" class="h-[70px] md:h-[92px] object-contain transition-opacity peer-hover:opacity-80" />
         </div>
 
         <!-- Desktop Nav -->
@@ -142,7 +142,7 @@
             </div>
 
             <div class="relative aspect-[4/3] bg-surface-container-low overflow-hidden">
-                <img id="main-image" src="" alt="Vehicle Image" class="w-full h-full object-cover" />
+                <img id="main-image" src="" alt="Vehicle Image" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" onclick="openLightbox(0)" />
                 <button id="fav-btn" class="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur p-3 rounded-full text-white hover:text-red-500 transition-colors">
                     <span class="material-symbols-outlined" id="fav-icon">favorite_border</span>
                 </button>
@@ -243,12 +243,33 @@
         </div>
     </div>
 
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-[60] hidden flex-col items-center justify-center touch-none">
+        <button id="lightbox-close" class="absolute top-6 right-6 text-white/70 hover:text-white z-20 p-2">
+            <span class="material-symbols-outlined text-3xl">close</span>
+        </button>
+        <button id="lightbox-prev" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white z-20 p-4">
+            <span class="material-symbols-outlined text-4xl md:text-6xl">chevron_left</span>
+        </button>
+        <div class="relative w-full h-full max-w-[100vw] max-h-[100vh] flex items-center justify-center p-4 md:p-12 overflow-hidden">
+            <img id="lightbox-img" src="" class="max-w-full max-h-full object-contain select-none transition-transform duration-300" alt="Vehicle Full Screen"/>
+        </div>
+        <button id="lightbox-next" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white z-20 p-4">
+            <span class="material-symbols-outlined text-4xl md:text-6xl">chevron_right</span>
+        </button>
+        <div id="lightbox-counter" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 tracking-widest text-sm font-bold">
+            1 / 1
+        </div>
+    </div>
+
     <script type="module">
         import { supabase } from '/supabaseClient.js';
         import { createMessage } from '/messages.js';
 
         let currentVehicle = null;
         let isDescExpanded = false;
+        let lightboxImages = [];
+        let currentLightboxIndex = 0;
         let exchangeRate = 50;
 
         // Load exchange rate
@@ -260,8 +281,7 @@
 
         function formatPrice(egpPrice) {
             if (!egpPrice) return 'Upon Request';
-            const price = egpPrice / exchangeRate;
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EGP', maximumFractionDigits: 0 }).format(egpPrice);
         }
 
         function updatePriceDisplay() {
@@ -326,11 +346,13 @@
 
             document.getElementById('main-image').src = v.image_url;
 
+            lightboxImages = v.gallery && v.gallery.length > 0 ? [v.image_url, ...v.gallery] : [v.image_url];
+
             // Gallery Thumbnails
             if (v.gallery && v.gallery.length > 0) {
                 const thumbsContainer = document.getElementById('thumbnails');
-                thumbsContainer.innerHTML = [v.image_url, ...v.gallery].map(img => `
-                    <div class="w-24 h-16 flex-shrink-0 cursor-pointer border border-transparent hover:border-primary transition-colors" onclick="document.getElementById('main-image').src='${escapeHTML(img)}'">
+                thumbsContainer.innerHTML = lightboxImages.map((img, idx) => `
+                    <div class="w-24 h-16 flex-shrink-0 cursor-pointer border border-transparent hover:border-primary transition-colors" onclick="openLightbox(${idx})">
                         <img src="${escapeHTML(img)}" class="w-full h-full object-cover" />
                     </div>
                 `).join('');
@@ -446,48 +468,86 @@
 
         init();
 
-        // ==== Global Social Sidebar ====
-        (async () => {
-            try {
-                const { getSettings } = await import('./settings.js');
-                const sideSettings = await getSettings();
-                const sidebar = document.getElementById('social-sidebar');
-                if (!sidebar) return;
-                const sideLinks = [
-                    { icon: 'fa-brands fa-instagram', label: 'Instagram', href: sideSettings.instagram_link },
-                    { icon: 'fa-brands fa-facebook-f', label: 'Facebook', href: sideSettings.facebook_link },
-                    { icon: 'fa-brands fa-tiktok', label: 'TikTok', href: sideSettings.tiktok_link },
-                    { icon: 'fa-brands fa-whatsapp', label: 'WhatsApp', href: sideSettings.whatsapp_number ? `https://wa.me/${sideSettings.whatsapp_number.replace(/[^0-9]/g, '')}` : null }
-                ];
-                let html = '';
-                sideLinks.forEach(({ icon, label, href }) => {
-                    if (href) html += `<a href="${href}" target="_blank" rel="noopener noreferrer" class="social-side-btn" title="${label}"><i class="${icon}"></i></a>`;
-                });
-                sidebar.innerHTML = html;
-            } catch(e) { console.error('Social sidebar error', e); }
-        })();
+
+
+        // Lightbox Logic
+        const lModal = document.getElementById('lightbox-modal');
+        const lImg = document.getElementById('lightbox-img');
+        const lCounter = document.getElementById('lightbox-counter');
+
+        window.openLightbox = function(index) {
+            if (!lightboxImages || lightboxImages.length === 0) return;
+            currentLightboxIndex = index;
+            updateLightboxView();
+            lModal.classList.remove('hidden');
+            lModal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        };
+
+        function closeLightbox() {
+            lModal.classList.add('hidden');
+            lModal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        function updateLightboxView() {
+            lImg.src = lightboxImages[currentLightboxIndex];
+            lCounter.textContent = `${currentLightboxIndex + 1} / ${lightboxImages.length}`;
+            
+            // Sync main image so when closing it reflects the last viewed photo
+            document.getElementById('main-image').src = lightboxImages[currentLightboxIndex];
+        }
+
+        function prevImage() {
+            currentLightboxIndex = (currentLightboxIndex === 0) ? lightboxImages.length - 1 : currentLightboxIndex - 1;
+            updateLightboxView();
+        }
+
+        function nextImage() {
+            currentLightboxIndex = (currentLightboxIndex === lightboxImages.length - 1) ? 0 : currentLightboxIndex + 1;
+            updateLightboxView();
+        }
+
+        document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+        document.getElementById('lightbox-prev').addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
+        document.getElementById('lightbox-next').addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
+        
+        // Close when clicking outside image
+        lModal.addEventListener('click', (e) => {
+            if (e.target === lModal || e.target.parentElement === lModal) closeLightbox();
+        });
+
+        // Touch Gestures
+        let touchStartX = 0;
+        let touchEndX = 0;
+        lModal.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        lModal.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, {passive: true});
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) nextImage(); // Swipe left -> Next
+            if (touchEndX > touchStartX + swipeThreshold) prevImage(); // Swipe right -> Prev
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (lModal.classList.contains('hidden')) return;
+            if (e.key === 'ArrowLeft') prevImage();
+            if (e.key === 'ArrowRight') nextImage();
+            if (e.key === 'Escape') closeLightbox();
+        });
 
         // Expose updatePriceDisplay for global usage if needed
         window._detailsUpdatePrice = updatePriceDisplay;
     </script>
 
-    <!-- Global Social Media Sidebar -->
-    <div id="social-sidebar"></div>
 
-    <!-- Floating FAB -->
-    <button id="fab-btn" class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-background rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50">
-        <span class="material-symbols-outlined">chat</span>
-    </button>
-
-    <!-- FAB Popup -->
-    <div id="fab-popup" class="fixed bottom-24 right-8 bg-surface-container-low border border-outline-variant p-4 rounded shadow-2xl hidden z-50 flex-col gap-4">
-        <a href="https://wa.me/123456789" target="_blank" class="flex items-center gap-3 text-white hover:text-primary transition-colors">
-            <span class="material-symbols-outlined">chat_bubble</span> WhatsApp
-        </a>
-        <a href="tel:+123456789" class="flex items-center gap-3 text-white hover:text-primary transition-colors">
-            <span class="material-symbols-outlined">call</span> Direct Call
-        </a>
-    </div>
 
 <script>
 
@@ -512,15 +572,7 @@
             });
         }
 
-        // FAB
-        const fabBtn = document.getElementById('fab-btn');
-        const fabPopup = document.getElementById('fab-popup');
-        if (fabBtn && fabPopup) {
-            fabBtn.addEventListener('click', () => {
-                fabPopup.classList.toggle('hidden');
-                fabPopup.classList.toggle('flex');
-            });
-        }
+
 
         // ==== Global Logic ====
         let currentLang = localStorage.getItem('lang') || 'en';
