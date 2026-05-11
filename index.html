@@ -6,6 +6,7 @@
     <title>Motor Hub - Elite Concierge</title>
     <link href="https://fonts.googleapis.com/css2?family=Metropolis:wght@400;500;700&family=Domine:wght@400;500;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -68,16 +69,56 @@
         }
         /* Mobile-safe overflow */
         html, body { overflow-x: hidden; max-width: 100vw; }
+
+        /* Global Social Sidebar */
+        #social-sidebar {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 49;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        .social-side-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background: rgba(19, 19, 19, 0.92);
+            border: 1px solid rgba(242, 202, 80, 0.25);
+            border-left: 3px solid rgba(242, 202, 80, 0.5);
+            color: #f2ca50;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(10px);
+        }
+        .social-side-btn:hover {
+            background: rgba(242, 202, 80, 0.12);
+            border-left-color: #f2ca50;
+            box-shadow: 2px 0 16px rgba(242, 202, 80, 0.2);
+            transform: translateX(5px);
+            color: #f2ca50;
+        }
+        @media (max-width: 640px) {
+            #social-sidebar { display: none; }
+        }
     </style>
 </head>
 <body class="bg-background text-on-surface min-h-screen flex flex-col">
     <div class="fixed inset-0 pointer-events-none z-[-1] flex items-center justify-center opacity-5"><img src="background-logo.png" class="w-[80vw] max-w-[800px] object-contain"></div>
     <!-- TopNavBar -->
     <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
-        <!-- Clickable Logo/Brand -->
-        <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">
-            <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-8 md:h-10 object-contain" />
-        </a>
+        <!-- Logo/Brand -->
+        <div class="relative flex items-center justify-center">
+            <!-- Invisible box right in the middle that returns to home page -->
+            <a href="index.html" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 z-10 cursor-pointer peer" aria-label="Home"></a>
+            <!-- Bigger logo -->
+            <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-12 md:h-16 object-contain transition-opacity peer-hover:opacity-80" />
+        </div>
 
         <!-- Desktop Nav -->
         <div class="hidden md:flex gap-10 items-center">
@@ -164,34 +205,56 @@
     </section>
 
         <!-- Gallery Section -->
-        <section class="py-24 px-4 md:px-12 max-w-[1600px] mx-auto w-full border-b border-outline-variant/30">
-            <header class="mb-16 flex flex-col items-center text-center">
+        <section class="py-24 px-4 md:px-12 max-w-[1400px] mx-auto w-full border-b border-outline-variant/30">
+            <header class="mb-12 flex flex-col items-center text-center">
                 <div class="tracking-widest text-primary text-xs uppercase font-bold mb-4" data-i18n="home_gallery_label">Gallery</div>
                 <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight uppercase" data-i18n="home_gallery_title">Masterpieces In Motion</h2>
             </header>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
                 <!-- Main Gallery Window -->
-                <div class="flex flex-col items-center">
-                    <h3 class="text-2xl font-bold tracking-tight uppercase mb-6 text-white text-center" data-i18n="home_gallery_main">Main Gallery</h3>
-                    <div id="main-gallery-window" class="relative w-full aspect-[4/3] bg-surface-container-low rounded overflow-hidden border border-outline-variant/30 cursor-pointer group">
+                <div class="flex flex-col">
+                    <div id="main-gallery-window" class="relative w-full aspect-[4/3] max-h-[320px] mx-auto bg-surface-container-low rounded overflow-hidden border border-outline-variant/30 cursor-pointer group shadow-xl">
                         <div id="main-gallery-container" class="w-full h-full relative">
                             <p class="text-neutral-500 absolute inset-0 flex items-center justify-center">Loading...</p>
                         </div>
                         <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
-                            <span class="bg-primary text-black px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-full shadow-lg" data-i18n="home_gallery_view_full">View Full Gallery</span>
+                            <span class="bg-primary text-black px-2 py-1 md:px-4 md:py-2 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-full shadow-lg text-center leading-tight" data-i18n="home_gallery_view_full">View Full Gallery</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Satisfied Clients Window -->
-                <div class="flex flex-col items-center">
-                    <h3 class="text-2xl font-bold tracking-tight uppercase mb-6 text-white text-center" data-i18n="home_gallery_clients">Satisfied Clients</h3>
-                    <div id="clients-gallery-window" class="relative w-full aspect-[4/3] bg-surface-container-low rounded overflow-hidden border border-outline-variant/30 cursor-pointer group">
+                <!-- Second Gallery Window -->
+                <div class="flex flex-col">
+                    <div id="clients-gallery-window" class="relative w-full aspect-[4/3] max-h-[320px] mx-auto bg-surface-container-low rounded overflow-hidden border border-outline-variant/30 cursor-pointer group shadow-xl">
                         <div id="clients-gallery-container" class="w-full h-full relative">
                             <p class="text-neutral-500 absolute inset-0 flex items-center justify-center">Loading...</p>
                         </div>
                         <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
-                            <span class="bg-primary text-black px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-full shadow-lg" data-i18n="home_gallery_view_full">View Full Gallery</span>
+                            <span class="bg-primary text-black px-2 py-1 md:px-4 md:py-2 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-full shadow-lg text-center leading-tight" data-i18n="home_gallery_view_full">View Full Gallery</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Third Gallery Window -->
+                <div class="flex flex-col">
+                    <div id="extra1-gallery-window" class="relative w-full aspect-[4/3] max-h-[320px] mx-auto bg-surface-container-low rounded overflow-hidden border border-outline-variant/30 cursor-pointer group shadow-xl">
+                        <div id="extra1-gallery-container" class="w-full h-full relative">
+                            <p class="text-neutral-500 absolute inset-0 flex items-center justify-center">Loading...</p>
+                        </div>
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
+                            <span class="bg-primary text-black px-2 py-1 md:px-4 md:py-2 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-full shadow-lg text-center leading-tight" data-i18n="home_gallery_view_full">View Full Gallery</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fourth Gallery Window -->
+                <div class="flex flex-col">
+                    <div id="extra2-gallery-window" class="relative w-full aspect-[4/3] max-h-[320px] mx-auto bg-surface-container-low rounded overflow-hidden border border-outline-variant/30 cursor-pointer group shadow-xl">
+                        <div id="extra2-gallery-container" class="w-full h-full relative">
+                            <p class="text-neutral-500 absolute inset-0 flex items-center justify-center">Loading...</p>
+                        </div>
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
+                            <span class="bg-primary text-black px-2 py-1 md:px-4 md:py-2 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-full shadow-lg text-center leading-tight" data-i18n="home_gallery_view_full">View Full Gallery</span>
                         </div>
                     </div>
                 </div>
@@ -215,6 +278,11 @@
             </div>
         </section>
     </main>
+
+    <!-- Global Social Media Sidebar -->
+    <div id="social-sidebar">
+        <!-- Icons injected by JS based on settings -->
+    </div>
 
     <!-- Floating FAB -->
     <button id="fab-btn" class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-background rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50">
@@ -294,8 +362,10 @@
                 };
 
                 renderSpotlight(spotlight);
-                renderGallery(shuffle(galleryImages), 'main');
-                renderGallery(shuffle(galleryImages), 'clients');
+                renderGallery(shuffle(galleryImages), 'main');     // Starts immediately
+                renderGallery(shuffle(galleryImages), 'clients', 1000); // Starts with 1s offset
+                renderGallery(shuffle(galleryImages), 'extra1', 2000); // Starts with 2s offset
+                renderGallery(shuffle(galleryImages), 'extra2', 3000); // Starts with 3s offset
                 applyLanguage();
                 updateCurrencyDisplay();
             } catch (err) {
@@ -327,10 +397,12 @@
         // Render Galleries & Auto-Rotation Logic
         const galleryStates = {
             main: { images: [], currentIndex: 0, containerId: 'main-gallery-container', intervalId: null },
-            clients: { images: [], currentIndex: 0, containerId: 'clients-gallery-container', intervalId: null }
+            clients: { images: [], currentIndex: 0, containerId: 'clients-gallery-container', intervalId: null },
+            extra1: { images: [], currentIndex: 0, containerId: 'extra1-gallery-container', intervalId: null },
+            extra2: { images: [], currentIndex: 0, containerId: 'extra2-gallery-container', intervalId: null }
         };
 
-        function renderGallery(images, type) {
+        function renderGallery(images, type, startDelayMs = 0) {
             const state = galleryStates[type];
             state.images = images || [];
             const container = document.getElementById(state.containerId);
@@ -357,39 +429,42 @@
                 nextImg.src = state.images[1].image_url;
             }
 
-            startAutoRotation(type);
+            startAutoRotation(type, startDelayMs);
         }
 
-        function startAutoRotation(type) {
+        function startAutoRotation(type, delayMs = 0) {
             const state = galleryStates[type];
             if (state.intervalId) clearInterval(state.intervalId);
             if (state.images.length <= 1) return;
 
-            state.intervalId = setInterval(() => {
-                const container = document.getElementById(state.containerId);
-                if (!container) return; // safety check
+            // Apply an initial offset delay so sliders don't fire simultaneously
+            setTimeout(() => {
+                state.intervalId = setInterval(() => {
+                    const container = document.getElementById(state.containerId);
+                    if (!container) return; // safety check
 
-                const currentIdx = state.currentIndex;
-                const nextIdx = (currentIdx + 1) % state.images.length;
+                    const currentIdx = state.currentIndex;
+                    const nextIdx = (currentIdx + 1) % state.images.length;
 
-                const currentImgEl = container.querySelector(`[data-idx="${currentIdx}"]`);
-                const nextImgEl = container.querySelector(`[data-idx="${nextIdx}"]`);
+                    const currentImgEl = container.querySelector(`[data-idx="${currentIdx}"]`);
+                    const nextImgEl = container.querySelector(`[data-idx="${nextIdx}"]`);
 
-                if (currentImgEl && nextImgEl) {
-                    currentImgEl.classList.remove('opacity-100');
-                    currentImgEl.classList.add('opacity-0');
-                    nextImgEl.classList.remove('opacity-0');
-                    nextImgEl.classList.add('opacity-100');
-                }
+                    if (currentImgEl && nextImgEl) {
+                        currentImgEl.classList.remove('opacity-100');
+                        currentImgEl.classList.add('opacity-0');
+                        nextImgEl.classList.remove('opacity-0');
+                        nextImgEl.classList.add('opacity-100');
+                    }
 
-                state.currentIndex = nextIdx;
+                    state.currentIndex = nextIdx;
 
-                // Preload the image after next to avoid flicker on slow networks
-                const preloadIdx = (nextIdx + 1) % state.images.length;
-                const preloadImg = new Image();
-                preloadImg.src = state.images[preloadIdx].image_url;
+                    // Preload the image after next to avoid flicker on slow networks
+                    const preloadIdx = (nextIdx + 1) % state.images.length;
+                    const preloadImg = new Image();
+                    preloadImg.src = state.images[preloadIdx].image_url;
 
-            }, 3000);
+                }, 3500); // Slightly longer interval for premium feel
+            }, delayMs);
         }
 
         // Spotlight Render
@@ -550,6 +625,8 @@
         // Lightbox Event Listeners
         document.getElementById('main-gallery-window').addEventListener('click', () => openLightbox('main'));
         document.getElementById('clients-gallery-window').addEventListener('click', () => openLightbox('clients'));
+        document.getElementById('extra1-gallery-window').addEventListener('click', () => openLightbox('extra1'));
+        document.getElementById('extra2-gallery-window').addEventListener('click', () => openLightbox('extra2'));
 
         document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
         document.getElementById('lightbox-next').addEventListener('click', (e) => { e.stopPropagation(); lightboxNext(); });
@@ -596,6 +673,33 @@
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(err => console.error(err));
         }
+
+        // ==== Global Social Sidebar ====
+        (async () => {
+            try {
+                const { getSettings } = await import('./settings.js');
+                const settings = await getSettings();
+                const sidebar = document.getElementById('social-sidebar');
+                if (!sidebar) return;
+
+                const links = [
+                    { key: 'instagram_link', icon: 'fa-brands fa-instagram', label: 'Instagram', href: settings.instagram_link },
+                    { key: 'facebook_link', icon: 'fa-brands fa-facebook-f', label: 'Facebook', href: settings.facebook_link },
+                    { key: 'tiktok_link', icon: 'fa-brands fa-tiktok', label: 'TikTok', href: settings.tiktok_link },
+                    { key: 'whatsapp', icon: 'fa-brands fa-whatsapp', label: 'WhatsApp', href: settings.whatsapp_number ? `https://wa.me/${settings.whatsapp_number.replace(/[^0-9]/g, '')}` : null }
+                ];
+
+                let html = '';
+                links.forEach(({ icon, label, href }) => {
+                    if (href) {
+                        html += `<a href="${href}" target="_blank" rel="noopener noreferrer" class="social-side-btn" title="${label}"><i class="${icon}"></i></a>`;
+                    }
+                });
+                sidebar.innerHTML = html;
+            } catch(e) {
+                console.error('Social sidebar failed to load', e);
+            }
+        })();
     </script>
 </body>
 </html>

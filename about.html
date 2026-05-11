@@ -6,6 +6,7 @@
     <title>Motor Hub - About Us</title>
     <link href="https://fonts.googleapis.com/css2?family=Metropolis:wght@400;500;700&family=Domine:wght@400;500;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -46,15 +47,100 @@
         }
         .site-brand { text-decoration: none; cursor: pointer; }
         html, body { overflow-x: hidden; max-width: 100vw; }
+
+        /* Founder Card Styles */
+        .founder-card {
+            background: #1c1b1b;
+            border: 1px solid rgba(77, 70, 53, 0.5);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            position: relative;
+        }
+        .founder-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #f2ca50, transparent);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .founder-card:hover {
+            border-color: rgba(242, 202, 80, 0.4);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(242, 202, 80, 0.1);
+            transform: translateY(-6px);
+        }
+        .founder-card:hover::before {
+            opacity: 1;
+        }
+        .founder-img-wrap {
+            aspect-ratio: 1/1;
+            overflow: hidden;
+            background: #131313;
+        }
+        .founder-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: grayscale(20%);
+        }
+        .founder-card:hover .founder-img-wrap img {
+            transform: scale(1.06);
+            filter: grayscale(0%);
+        }
+
+        /* Global Social Sidebar */
+        #social-sidebar {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 49;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        .social-side-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background: rgba(19, 19, 19, 0.92);
+            border: 1px solid rgba(242, 202, 80, 0.25);
+            border-left: 3px solid rgba(242, 202, 80, 0.5);
+            color: #f2ca50;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(10px);
+        }
+        .social-side-btn:hover {
+            background: rgba(242, 202, 80, 0.12);
+            border-left-color: #f2ca50;
+            box-shadow: 2px 0 16px rgba(242, 202, 80, 0.2);
+            transform: translateX(5px);
+            color: #f2ca50;
+        }
+        @media (max-width: 640px) {
+            #social-sidebar { display: none; }
+        }
     </style>
 </head>
 <body class="bg-background text-on-surface min-h-screen flex flex-col">
     <!-- TopNavBar -->
     <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
-        <!-- Clickable Logo/Brand -->
-        <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">
-            <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-8 md:h-10 object-contain" />
-        </a>
+        <!-- Logo/Brand -->
+        <div class="relative flex items-center justify-center">
+            <!-- Invisible box right in the middle that returns to home page -->
+            <a href="index.html" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 z-10 cursor-pointer peer" aria-label="Home"></a>
+            <!-- Bigger logo -->
+            <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-12 md:h-16 object-contain transition-opacity peer-hover:opacity-80" />
+        </div>
 
         <!-- Desktop Nav -->
         <div class="hidden md:flex gap-10 items-center">
@@ -84,31 +170,100 @@
         <button id="mobile-lang-toggle" class="nav-toggle-btn text-left mb-4 w-fit">Switch to AR</button>
     </div>
 
-    <main class="flex-grow pt-32 pb-24 px-4 md:px-12 max-w-[1200px] mx-auto w-full">
-        <section class="text-center mb-24">
-            <span class="text-primary tracking-[0.2em] font-bold text-xs uppercase mb-4 block" data-i18n="about_mission">Our Mission</span>
-            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-8 text-white" data-i18n="about_title">THE APEX OF<br/>AUTOMOTIVE CONCIERGE</h1>
-            <p class="text-neutral-400 text-lg md:text-xl leading-relaxed max-w-3xl mx-auto" data-i18n="about_desc">
-                Motor Hub is not a dealership. We are a private brokerage and concierge service dedicated to sourcing the most exclusive, elusive, and extraordinary vehicles on the planet for a discerning clientele. Discretion, speed, and absolute perfection are our minimum standards.
+    <main class="flex-grow pt-32 pb-24 px-4 md:px-12 max-w-[1400px] mx-auto w-full">
+
+        <!-- Page Header -->
+        <header class="text-center mb-20">
+            <span class="text-primary tracking-[0.2em] font-bold text-xs uppercase mb-4 block" data-i18n="about_team_label">The Team</span>
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6 text-white uppercase" data-i18n="about_team_title">Meet The<br/><span class="text-primary">Founders</span></h1>
+            <p class="text-neutral-400 text-base md:text-lg leading-relaxed max-w-2xl mx-auto" data-i18n="about_team_desc">
+                The visionaries behind Motor Hub — dedicated to redefining the premium automotive experience.
             </p>
+        </header>
+
+        <!-- Founders Grid -->
+        <section id="founders-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Founder 1 -->
+            <article class="founder-card group bg-surface-container-low border border-outline-variant rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/20">
+                <div class="founder-img-wrap aspect-square overflow-hidden bg-background">
+                    <img src="images/founders/ahmed-adel.jpg?v=2" alt="Mr. Ahmed Adel" class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                </div>
+                <div class="p-8">
+                    <h2 class="text-2xl font-extrabold uppercase tracking-tight text-white mb-1">Mr. Ahmed Adel</h2>
+                    <p class="text-primary font-bold text-sm uppercase tracking-wider mb-4">Over 17 Years of Automotive Experience</p>
+                    <div class="w-12 h-0.5 bg-primary/50 mb-6"></div>
+                    
+                    <div class="text-neutral-400 text-sm space-y-4">
+                        <div>
+                            <p class="text-white font-semibold mb-1">Worked for major automotive entities including:</p>
+                            <ul class="list-disc list-inside space-y-1 ml-1">
+                                <li>Nissan Motors Corporation (2008 – 2010)</li>
+                                <li>Toyota Egypt (2010 – 2023)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="text-white font-semibold mb-1">Positions held:</p>
+                            <ul class="list-disc list-inside space-y-1 ml-1">
+                                <li>Used Cars Business Manager (TEG)</li>
+                                <li>Tenders Sales Manager (TEG)</li>
+                                <li>Export Sales Manager (TEG)</li>
+                                <li>Fleet Sales Assistant Manager (TEG)</li>
+                                <li>Retail Sales Executive for 5 years (Nissan & TEG)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Founder 2 -->
+            <article class="founder-card group bg-surface-container-low border border-outline-variant rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/20">
+                <div class="founder-img-wrap aspect-square overflow-hidden bg-background">
+                    <img src="images/founders/ahmed-waheed.jpg?v=2" alt="Mr. Ahmed Waheed" class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                </div>
+                <div class="p-8">
+                    <h2 class="text-2xl font-extrabold uppercase tracking-tight text-white mb-1">Mr. Ahmed Waheed</h2>
+                    <p class="text-primary font-bold text-sm uppercase tracking-wider mb-4">Over 13 Years of Automotive Experience</p>
+                    <div class="w-12 h-0.5 bg-primary/50 mb-6"></div>
+                    
+                    <div class="text-neutral-400 text-sm space-y-4">
+                        <div>
+                            <p class="text-white font-semibold mb-1">Worked for major automotive entities including:</p>
+                            <ul class="list-disc list-inside space-y-1 ml-1">
+                                <li>Kasrawy Group (2012 – 2020)</li>
+                                <li>Toyota Egypt (2020 – 2024)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="text-white font-semibold mb-1">Positions held:</p>
+                            <ul class="list-disc list-inside space-y-1 ml-1">
+                                <li>Used Cars Sales Manager (TEG)</li>
+                                <li>Kaizen Manager (TEG)</li>
+                                <li>Sales Manager (Kasrawy Group)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Founder 3 -->
+            <article class="founder-card group bg-surface-container-low border border-outline-variant rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/20">
+                <div class="founder-img-wrap aspect-square overflow-hidden bg-background">
+                    <img src="images/founders/noureldin-hesham.jpg?v=2" alt="Noureldin Hesham Abdo" class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                </div>
+                <div class="p-8">
+                    <h2 class="text-2xl font-extrabold uppercase tracking-tight text-white mb-1">Noureldin Hesham Abdo</h2>
+                    <p class="text-primary font-bold text-sm uppercase tracking-wider mb-4">Co-Founder & Automotive Industry Professional</p>
+                    <div class="w-12 h-0.5 bg-primary/50 mb-6"></div>
+                </div>
+            </article>
         </section>
 
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            <div class="aspect-square bg-surface-container-low overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1614200187524-dc4b892acf16" alt="Electric Vanguard" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"/>
-            </div>
-            <div>
-                <span class="text-primary tracking-[0.2em] font-bold text-xs uppercase mb-4 block" data-i18n="about_future">The Future</span>
-                <h2 class="text-4xl font-bold tracking-tighter mb-6 text-white" data-i18n="about_future_title">REDEFINING THE<br/>ELECTRIC VANGUARD</h2>
-                <p class="text-neutral-400 leading-relaxed mb-6" data-i18n="about_future_desc1">
-                    As the world pivots toward electrification, the definition of luxury and performance evolves. We maintain direct channels with the world's leading hyper-EV manufacturers, ensuring our clients are allocated the first chassis of limited-run electric masterpieces.
-                </p>
-                <p class="text-neutral-400 leading-relaxed" data-i18n="about_future_desc2">
-                    From the silent, surging torque of modern electric grand tourers to the aerodynamically flawless electric hypercars shattering track records, Motor Hub secures your place at the frontier of automotive history.
-                </p>
-            </div>
-        </section>
     </main>
+
+    <!-- Global Social Media Sidebar -->
+    <div id="social-sidebar">
+        <!-- Icons injected by JS based on settings -->
+    </div>
 
     <!-- Floating FAB -->
     <button id="fab-btn" class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-background rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50">
@@ -125,17 +280,39 @@
         </a>
     </div>
 
-<script>
+    <script type="module">
+        import { getSettings } from './settings.js';
 
-        </script>
-<script>
+        // ==== Social Sidebar ====
+        async function initSocialSidebar() {
+            try {
+                const settings = await getSettings();
+                const sidebar = document.getElementById('social-sidebar');
+                if (!sidebar) return;
 
-        </script>
-<script>
+                const links = [
+                    { icon: 'fa-brands fa-instagram', label: 'Instagram', href: settings.instagram_link },
+                    { icon: 'fa-brands fa-facebook-f', label: 'Facebook', href: settings.facebook_link },
+                    { icon: 'fa-brands fa-tiktok', label: 'TikTok', href: settings.tiktok_link },
+                    { icon: 'fa-brands fa-whatsapp', label: 'WhatsApp', href: settings.whatsapp_number ? `https://wa.me/${settings.whatsapp_number.replace(/[^0-9]/g, '')}` : null }
+                ];
 
-        </script>
-<script>
+                let html = '';
+                links.forEach(({ icon, label, href }) => {
+                    if (href) {
+                        html += `<a href="${href}" target="_blank" rel="noopener noreferrer" class="social-side-btn" title="${label}"><i class="${icon}"></i></a>`;
+                    }
+                });
+                sidebar.innerHTML = html;
+            } catch(e) {
+                console.error('Social sidebar failed to load', e);
+            }
+        }
 
+        initSocialSidebar();
+    </script>
+
+    <script>
         // Mobile Menu
         const menuBtn = document.getElementById('mobile-menu-btn');
         const drawer = document.getElementById('mobile-drawer');
@@ -158,13 +335,12 @@
             });
         }
 
-        // ==== Global Logic ====
+        // ==== Global Language Logic ====
         let currentLang = localStorage.getItem('lang') || 'en';
         let translations = {};
 
         async function initGlobal() {
             try {
-                // Fetch translations directly
                 const transRes = await fetch('translations.json').then(r => r.json());
                 translations = transRes;
                 applyLanguage();
@@ -214,10 +390,7 @@
             });
         }
 
-
-
         initGlobal();
-
-</script>
+    </script>
 </body>
 </html>

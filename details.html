@@ -11,6 +11,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Metropolis:wght@400;500;700&family=Domine:wght@400;500;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms">
         </script>
     <script id="tailwind-config">
@@ -52,15 +53,55 @@
         }
         .site-brand { text-decoration: none; cursor: pointer; }
         html, body { overflow-x: hidden; max-width: 100vw; }
+
+        /* Global Social Sidebar */
+        #social-sidebar {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 49;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        .social-side-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background: rgba(19, 19, 19, 0.92);
+            border: 1px solid rgba(242, 202, 80, 0.25);
+            border-left: 3px solid rgba(242, 202, 80, 0.5);
+            color: #f2ca50;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(10px);
+        }
+        .social-side-btn:hover {
+            background: rgba(242, 202, 80, 0.12);
+            border-left-color: #f2ca50;
+            box-shadow: 2px 0 16px rgba(242, 202, 80, 0.2);
+            transform: translateX(5px);
+            color: #f2ca50;
+        }
+        @media (max-width: 640px) {
+            #social-sidebar { display: none; }
+        }
     </style>
 </head>
 <body class="bg-background text-on-surface min-h-screen flex flex-col">
     <!-- TopNavBar -->
     <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
-        <!-- Clickable Logo/Brand -->
-        <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">
-            <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-8 md:h-10 object-contain" />
-        </a>
+        <!-- Logo/Brand -->
+        <div class="relative flex items-center justify-center">
+            <!-- Invisible box right in the middle that returns to home page -->
+            <a href="index.html" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 z-10 cursor-pointer peer" aria-label="Home"></a>
+            <!-- Bigger logo -->
+            <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-12 md:h-16 object-contain transition-opacity peer-hover:opacity-80" />
+        </div>
 
         <!-- Desktop Nav -->
         <div class="hidden md:flex gap-10 items-center">
@@ -405,9 +446,33 @@
 
         init();
 
+        // ==== Global Social Sidebar ====
+        (async () => {
+            try {
+                const { getSettings } = await import('./settings.js');
+                const sideSettings = await getSettings();
+                const sidebar = document.getElementById('social-sidebar');
+                if (!sidebar) return;
+                const sideLinks = [
+                    { icon: 'fa-brands fa-instagram', label: 'Instagram', href: sideSettings.instagram_link },
+                    { icon: 'fa-brands fa-facebook-f', label: 'Facebook', href: sideSettings.facebook_link },
+                    { icon: 'fa-brands fa-tiktok', label: 'TikTok', href: sideSettings.tiktok_link },
+                    { icon: 'fa-brands fa-whatsapp', label: 'WhatsApp', href: sideSettings.whatsapp_number ? `https://wa.me/${sideSettings.whatsapp_number.replace(/[^0-9]/g, '')}` : null }
+                ];
+                let html = '';
+                sideLinks.forEach(({ icon, label, href }) => {
+                    if (href) html += `<a href="${href}" target="_blank" rel="noopener noreferrer" class="social-side-btn" title="${label}"><i class="${icon}"></i></a>`;
+                });
+                sidebar.innerHTML = html;
+            } catch(e) { console.error('Social sidebar error', e); }
+        })();
+
         // Expose updatePriceDisplay for global usage if needed
         window._detailsUpdatePrice = updatePriceDisplay;
     </script>
+
+    <!-- Global Social Media Sidebar -->
+    <div id="social-sidebar"></div>
 
     <!-- Floating FAB -->
     <button id="fab-btn" class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-background rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50">
