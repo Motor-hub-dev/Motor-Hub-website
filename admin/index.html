@@ -86,7 +86,7 @@
                 <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-inquiries" data-i18n="admin_inquiries">Inquiries</button>
                 <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-gallery" data-i18n="admin_gallery">Gallery</button>
                 <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-settings" data-i18n="admin_settings">Settings</button>
-                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-events">Events</button>
+                
             </nav>
         </aside>
 
@@ -271,45 +271,7 @@
                 </form>
             </section>
 
-            <!-- TAB: EVENTS -->
-            <section id="tab-events" class="tab-content hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold uppercase tracking-tight text-white">Events Themes</h2>
-                </div>
-                <form id="events-form" class="space-y-8 bg-surface-container-low border border-outline-variant rounded p-8">
-                    <div class="space-y-6">
-                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Active Event Theme</h3>
-                        <div>
-                            <label class="block text-[11px] text-neutral-400 mb-2">Select an event to apply a custom appearance globally</label>
-                            <select id="set-event" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm">
-                                <option value="none">No Event (Default Theme)</option>
-                                <optgroup label="Islamic Holidays">
-                                    <option value="ramadan">Ramadan</option>
-                                    <option value="eid-al-fitr">Eid al-Fitr</option>
-                                    <option value="eid-al-adha">Eid al-Adha</option>
-                                    <option value="islamic-new-year">Islamic New Year (Hijri New Year)</option>
-                                    <option value="mawlid-al-nabi">Mawlid al-Nabi</option>
-                                </optgroup>
-                                <optgroup label="Coptic Holidays">
-                                    <option value="coptic-christmas">Coptic Christmas (Jan 7)</option>
-                                    <option value="easter">Easter</option>
-                                    <option value="sham-el-nessim">Sham El Nessim</option>
-                                </optgroup>
-                                <optgroup label="National Holidays">
-                                    <option value="police-day">Police Day (Jan 25)</option>
-                                    <option value="sinai-liberation-day">Sinai Liberation Day (Apr 25)</option>
-                                    <option value="revolution-day">Revolution Day (Jul 23)</option>
-                                    <option value="armed-forces-day">Armed Forces Day (Oct 6)</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="pt-4 flex justify-between items-center border-t border-outline-variant mt-8">
-                        <p id="events-toast" class="text-green-500 font-bold tracking-widest text-xs hidden uppercase">Theme Applied!</p>
-                        <button type="submit" id="btn-save-events" class="bg-primary text-black font-bold tracking-tight rounded py-3 px-8 text-sm hover:brightness-110 ml-auto">Apply Theme</button>
-                    </div>
-                </form>
-            </section>
+
 
 
 
@@ -1091,35 +1053,7 @@
             }
         });
 
-        // ==== EVENTS TAB LOGIC ====
-        async function renderEventsForm() {
-            try {
-                const settings = await getSettings();
-                document.getElementById('set-event').value = settings.active_event || 'none';
-            } catch(e) {
-                console.error("Failed to load events", e);
-            }
-        }
 
-        document.getElementById('events-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-save-events');
-            btn.disabled = true;
-            btn.textContent = 'Applying...';
-            try {
-                await updateSettings({
-                    active_event: document.getElementById('set-event').value
-                });
-                const toast = document.getElementById('events-toast');
-                toast.classList.remove('hidden');
-                setTimeout(() => toast.classList.add('hidden'), 3000);
-            } catch(e) {
-                alert("Failed to apply theme");
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Apply Theme';
-            }
-        });
 
         // ==== GALLERY TAB LOGIC ====
 
@@ -1272,7 +1206,6 @@
                 if(target === 'tab-inquiries') renderInquiriesTable();
                 if(target === 'tab-settings') renderSettingsForm();
                 if(target === 'tab-gallery') renderGalleryTab();
-                if(target === 'tab-events') renderEventsForm();
             });
         });
 
