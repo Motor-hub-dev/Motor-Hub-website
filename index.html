@@ -691,13 +691,13 @@
 
         init();
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(err => console.error(err));
+            navigator.serviceWorker.register('/sw.js').catch(err => console.error(err));
         }
 
         // ==== Global Social Sidebar ====
         (async () => {
             try {
-                const { getSettings } = await import('./settings.js');
+                const { getSettings } = await import('/settings.js');
                 const settings = await getSettings();
                 // [AUTO-INJECT] Update FAB and hardcoded contact links
                 if (typeof settings !== 'undefined' || typeof sideSettings !== 'undefined') {

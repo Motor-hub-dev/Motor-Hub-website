@@ -11,7 +11,7 @@ export async function applyEventTheme() {
                 const link = document.createElement('link');
                 link.id = 'events-css';
                 link.rel = 'stylesheet';
-                link.href = 'events.css';
+                link.href = '/events.css';
                 document.head.appendChild(link);
             }
         }

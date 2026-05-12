@@ -261,7 +261,7 @@
 
         // Try to load exchange rate from settings
         try {
-            const { getSettings } = await import('./settings.js');
+            const { getSettings } = await import('/settings.js');
             const settings = await getSettings().catch(() => ({}));
                 // [AUTO-INJECT] Update FAB and hardcoded contact links
                 if (typeof settings !== 'undefined' || typeof sideSettings !== 'undefined') {
@@ -528,13 +528,13 @@
 
         init();
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(err => console.error(err));
+            navigator.serviceWorker.register('/sw.js').catch(err => console.error(err));
         }
 
         // ==== Global Social Sidebar ====
         (async () => {
             try {
-                const { getSettings } = await import('./settings.js');
+                const { getSettings } = await import('/settings.js');
                 const sideSettings = await getSettings();
                 const sidebar = document.getElementById('social-sidebar');
                 if (!sidebar) return;
@@ -616,7 +616,7 @@
                 const transRes = await fetch('/translations.json').then(r => r.json());
                 translations = transRes;
                 applyLanguage();
-                import('./events.js').then(m => m.applyEventTheme()).catch(e => console.error(e));
+                import('/events.js').then(m => m.applyEventTheme()).catch(e => console.error(e));
             } catch (err) {
                 console.error("Global init error:", err);
             }

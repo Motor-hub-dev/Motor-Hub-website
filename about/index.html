@@ -382,7 +382,7 @@
                 const transRes = await fetch('/translations.json').then(r => r.json());
                 translations = transRes;
                 applyLanguage();
-                import('./events.js').then(m => m.applyEventTheme()).catch(e => console.error(e));
+                import('/events.js').then(m => m.applyEventTheme()).catch(e => console.error(e));
             } catch (err) {
                 console.error("Global init error:", err);
             }
