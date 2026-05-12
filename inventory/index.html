@@ -503,6 +503,9 @@
         finMonth.addEventListener('input', filterAndRender);
         finYears.addEventListener('change', filterAndRender);
 
+        // Expose for cross-script language sync
+        window._filterAndRender = filterAndRender;
+
         init();
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(err => console.error(err));
@@ -622,6 +625,10 @@
             if(lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
             const mlt = document.getElementById('mobile-lang-toggle');
             if(mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
+
+            if (window._filterAndRender) {
+                window._filterAndRender();
+            }
         }
 
         const langToggleBtn = document.getElementById('lang-toggle');
@@ -641,6 +648,13 @@
                 applyLanguage();
             });
         }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'lang') {
+                currentLang = e.newValue || 'en';
+                applyLanguage();
+            }
+        });
 
 
 

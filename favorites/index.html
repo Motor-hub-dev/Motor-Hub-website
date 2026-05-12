@@ -250,7 +250,15 @@
             }
         };
 
-
+        window._favFilterAndRender = function() {
+            const favIds = JSON.parse(localStorage.getItem('favorites') || '[]');
+            const favVehicles = allVehicles.filter(v => favIds.includes(v.id));
+            if (favVehicles.length === 0) {
+                renderEmptyState();
+            } else {
+                renderGrid(favVehicles);
+            }
+        };
 
         init();
 
@@ -366,6 +374,10 @@
             if(lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
             const mlt = document.getElementById('mobile-lang-toggle');
             if(mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
+
+            if (window._favFilterAndRender) {
+                window._favFilterAndRender();
+            }
         }
 
         const langToggleBtn = document.getElementById('lang-toggle');
@@ -385,6 +397,13 @@
                 applyLanguage();
             });
         }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'lang') {
+                currentLang = e.newValue || 'en';
+                applyLanguage();
+            }
+        });
 
 
 

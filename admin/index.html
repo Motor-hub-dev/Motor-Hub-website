@@ -77,7 +77,10 @@
                 <span class="font-black text-primary text-xl tracking-tighter">
                     <img src="/motor-hub-logo.png" alt="Motor Hub Logo" class="h-[46px] object-contain" />
                 </span>
-                <button id="logout-btn" class="text-xs text-neutral-500 hover:text-white uppercase tracking-widest">Logout</button>
+                <div class="flex gap-4 items-center">
+                    <button id="admin-lang-toggle" class="text-xs text-primary font-bold uppercase tracking-widest hover:brightness-110">AR</button>
+                    <button id="logout-btn" class="text-xs text-neutral-500 hover:text-white uppercase tracking-widest">Logout</button>
+                </div>
             </div>
             <nav class="flex-grow flex flex-col p-4 gap-2">
                 <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-primary font-bold bg-white/5" data-target="tab-products">Products</button>
@@ -1263,9 +1266,21 @@
             }
         });
 
+        const adminLangToggle = document.getElementById('admin-lang-toggle');
+        if (adminLangToggle) {
+            adminLangToggle.addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'ar' : 'en';
+                localStorage.setItem('lang', currentLang);
+                applyAdminLanguage();
+            });
+        }
+
         function applyAdminLanguage() {
             document.documentElement.lang = currentLang;
             document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            if (adminLangToggle) {
+                adminLangToggle.textContent = currentLang === 'en' ? 'AR' : 'EN';
+            }
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[currentLang] && translations[currentLang][key]) {

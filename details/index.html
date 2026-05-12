@@ -558,6 +558,8 @@
 
         // Expose updatePriceDisplay for global usage if needed
         window._detailsUpdatePrice = updatePriceDisplay;
+        window._renderDetails = renderDetails;
+        window._getCurrentVehicle = () => currentVehicle;
     </script>
 
 
@@ -626,6 +628,10 @@
             if(lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
             const mlt = document.getElementById('mobile-lang-toggle');
             if(mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
+
+            if (window._renderDetails && window._getCurrentVehicle && window._getCurrentVehicle()) {
+                window._renderDetails();
+            }
         }
 
         const langToggleBtn = document.getElementById('lang-toggle');
@@ -646,7 +652,12 @@
             });
         }
 
-
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'lang') {
+                currentLang = e.newValue || 'en';
+                applyLanguage();
+            }
+        });
 
         initGlobal();
 

@@ -343,6 +343,7 @@
                 ]);
 
                 translations = transRes;
+                window._spotlightData = spotlight;
 
                 // Set Hero BG
                 if (settings.hero_bg_url) {
@@ -474,23 +475,31 @@
                 grid.innerHTML = '<p class="text-neutral-500">No spotlight vehicles available.</p>';
                 return;
             }
-            grid.innerHTML = vehicles.map(v => `
+            grid.innerHTML = vehicles.map(v => {
+                const eName = currentLang === 'ar' && v.name_ar ? escapeHTML(v.name_ar) : escapeHTML(v.name);
+                return `
                 <div class="group cursor-pointer" onclick="window.location.href='/details/?id=${escapeHTML(v.id)}'">
                     <div class="relative overflow-hidden aspect-[16/10] bg-surface-container-low mb-6">
-                        <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="${escapeHTML(v.image_url)}" alt="${escapeHTML(v.name)}" />
+                        <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="${escapeHTML(v.image_url)}" alt="${eName}" />
                         <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60"></div>
                         ${v.is_sold_out ? '<div class="absolute inset-0 bg-black/50 flex items-center justify-center"><span class="bg-red-900 text-white px-4 py-2 text-xs font-bold uppercase">Sold Out</span></div>' : ''}
                     </div>
                     <div class="flex justify-between items-start gap-3">
                         <div class="min-w-0">
-                            <h3 class="text-2xl font-bold tracking-tight uppercase text-white truncate">${escapeHTML(v.name)}</h3>
+                            <h3 class="text-2xl font-bold tracking-tight uppercase text-white truncate">${eName}</h3>
                             <p class="text-outline-variant text-xs uppercase tracking-widest mt-1">${escapeHTML(v.version || '')}</p>
                         </div>
                         <span class="text-xl font-black text-primary price-display whitespace-nowrap" data-egp="${escapeHTML(String(v.price_egp || ''))}">${escapeHTML(formatPrice(v.price_egp))}</span>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
+
+        window._renderSpotlight = () => {
+            if (window._spotlightData) {
+                renderSpotlight(window._spotlightData);
+            }
+        };
 
         function formatPrice(egpPrice) {
             if (!egpPrice) return 'Reserved';
@@ -527,6 +536,10 @@
             if(lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
             const mlt = document.getElementById('mobile-lang-toggle');
             if(mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
+
+            if (window._renderSpotlight) {
+                window._renderSpotlight();
+            }
         }
 
         // Event Listeners
@@ -534,6 +547,13 @@
             currentLang = currentLang === 'en' ? 'ar' : 'en';
             localStorage.setItem('lang', currentLang);
             applyLanguage();
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'lang') {
+                currentLang = e.newValue || 'en';
+                applyLanguage();
+            }
         });
 
         // Mobile Menu
