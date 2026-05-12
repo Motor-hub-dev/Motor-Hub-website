@@ -371,7 +371,7 @@
                 thumbsContainer.innerHTML = allMedia.map((m) => {
                     if (m.type === 'image') {
                         return `
-                            <div class="w-24 h-16 flex-shrink-0 cursor-pointer border border-transparent hover:border-primary transition-colors relative" onclick="window.setMainMedia('image', '${escapeHTML(m.url)}', ${m.lbIdx})">
+                            <div class="w-24 h-16 flex-shrink-0 cursor-pointer border border-transparent hover:border-primary transition-colors relative" onclick="openLightbox(${m.lbIdx})">
                                 <img src="${escapeHTML(m.url)}" class="w-full h-full object-cover" />
                             </div>
                         `;
