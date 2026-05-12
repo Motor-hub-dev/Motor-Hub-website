@@ -143,7 +143,7 @@
 
             <div class="relative aspect-[4/3] bg-surface-container-low overflow-hidden">
                 <img id="main-image" src="" alt="Vehicle Image" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" onclick="openLightbox(0)" />
-                <video id="main-video" class="w-full h-full object-cover hidden" autoplay loop muted playsinline></video>
+                <video id="main-video" class="w-full h-full object-cover hidden" controls playsinline></video>
                 <button id="fav-btn" class="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur p-3 rounded-full text-white hover:text-red-500 transition-colors">
                     <span class="material-symbols-outlined" id="fav-icon">favorite_border</span>
                 </button>
@@ -345,30 +345,74 @@
             const descEl = document.getElementById('vehicle-description');
             descEl.textContent = desc || 'No description available.';
 
-            const mainImg = document.getElementById('main-image');
-            const mainVideo = document.getElementById('main-video');
+            // Media Handling
+            let allMedia = [];
             
-            if (v.video_url) {
-                mainImg.classList.add('hidden');
-                mainVideo.classList.remove('hidden');
-                mainVideo.src = v.video_url;
-                mainImg.src = v.image_url;
-            } else {
-                mainVideo.classList.add('hidden');
-                mainImg.classList.remove('hidden');
-                mainImg.src = v.image_url;
-            }
+            // Collect images
+            let images = v.gallery && v.gallery.length > 0 ? [v.image_url, ...v.gallery] : [v.image_url];
+            images.forEach((img, idx) => {
+                allMedia.push({ type: 'image', url: img, lbIdx: idx });
+            });
 
-            lightboxImages = v.gallery && v.gallery.length > 0 ? [v.image_url, ...v.gallery] : [v.image_url];
+            // Collect videos
+            let videos = v.video_urls ? (typeof v.video_urls === 'string' ? JSON.parse(v.video_urls) : v.video_urls) : [];
+            if (v.video_url && videos.length === 0) {
+                videos.push(v.video_url);
+            }
+            videos.forEach(vid => {
+                allMedia.push({ type: 'video', url: vid });
+            });
+
+            lightboxImages = images;
 
             // Gallery Thumbnails
-            if (v.gallery && v.gallery.length > 0) {
-                const thumbsContainer = document.getElementById('thumbnails');
-                thumbsContainer.innerHTML = lightboxImages.map((img, idx) => `
-                    <div class="w-24 h-16 flex-shrink-0 cursor-pointer border border-transparent hover:border-primary transition-colors" onclick="openLightbox(${idx})">
-                        <img src="${escapeHTML(img)}" class="w-full h-full object-cover" />
-                    </div>
-                `).join('');
+            const thumbsContainer = document.getElementById('thumbnails');
+            if (allMedia.length > 1 || videos.length > 0) {
+                thumbsContainer.innerHTML = allMedia.map((m) => {
+                    if (m.type === 'image') {
+                        return `
+                            <div class="w-24 h-16 flex-shrink-0 cursor-pointer border border-transparent hover:border-primary transition-colors relative" onclick="window.setMainMedia('image', '${escapeHTML(m.url)}', ${m.lbIdx})">
+                                <img src="${escapeHTML(m.url)}" class="w-full h-full object-cover" />
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div class="w-24 h-16 flex-shrink-0 cursor-pointer border border-transparent hover:border-primary transition-colors relative bg-neutral-900 flex items-center justify-center group border-outline-variant" onclick="window.setMainMedia('video', '${escapeHTML(m.url)}')">
+                                <span class="material-symbols-outlined text-primary text-3xl group-hover:scale-110 transition-transform">play_circle</span>
+                            </div>
+                        `;
+                    }
+                }).join('');
+            } else {
+                thumbsContainer.innerHTML = '';
+            }
+
+            // Expose a global function to switch the main display
+            window.setMainMedia = (type, url, lbIdx) => {
+                const mainImg = document.getElementById('main-image');
+                const mainVideo = document.getElementById('main-video');
+                
+                if (type === 'image') {
+                    mainVideo.classList.add('hidden');
+                    mainVideo.pause();
+                    mainImg.classList.remove('hidden');
+                    mainImg.src = url;
+                    mainImg.onclick = () => openLightbox(lbIdx);
+                } else if (type === 'video') {
+                    mainImg.classList.add('hidden');
+                    mainVideo.classList.remove('hidden');
+                    if (mainVideo.src !== url) {
+                        mainVideo.src = url;
+                    }
+                    mainVideo.play().catch(e => console.log("Autoplay blocked. User interaction required."));
+                }
+            };
+
+            // Initial view
+            if (videos.length > 0) {
+                window.setMainMedia('video', videos[0]);
+            } else {
+                window.setMainMedia('image', images[0], 0);
             }
 
 

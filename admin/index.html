@@ -475,14 +475,13 @@
 
                     <!-- Video Block -->
                     <div id="v-video-block" class="mt-8 pt-8 border-t border-outline-variant space-y-4">
-                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest">Showcase Video (Optional)</h3>
+                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest">Showcase Videos (Optional)</h3>
                         <div class="border border-dashed border-outline-variant rounded p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5" onclick="document.getElementById('f-video-upload').click()">
                             <span class="material-symbols-outlined text-4xl text-neutral-500 mb-2">videocam</span>
-                            <span id="f-video-label" class="text-sm font-bold text-neutral-400 mb-2">Click to upload a video</span>
-                            <input type="file" id="f-video-upload" class="hidden" accept="video/*" />
-                            <input type="hidden" id="f-video-url" value="${escapeHTML(data.video_url || '')}"/>
+                            <span class="text-sm font-bold text-neutral-400 mb-2">Click to upload multiple videos</span>
+                            <input type="file" id="f-video-upload" multiple class="hidden" accept="video/*" />
                         </div>
-                        ${data.video_url ? `<div class="text-[10px] text-primary mt-1 text-center">Video currently set.</div>` : ''}
+                        <div id="v-video-preview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4"></div>
                     </div>
 
                     <!-- Gallery Block -->
@@ -499,7 +498,11 @@
 
                 // GLOBAL STATE FOR MODAL
                 window.modalGlobalGalleryUrls = data.gallery ? (typeof data.gallery === 'string' ? JSON.parse(data.gallery) : data.gallery) : (data.gallery_urls || []);
-                window.modalFilesQueue = []; // { type: 'gallery'|'color', cid: null, file: File }
+                window.modalVideoUrls = data.video_urls ? (typeof data.video_urls === 'string' ? JSON.parse(data.video_urls) : data.video_urls) : [];
+                if (data.video_url && window.modalVideoUrls.length === 0) {
+                    window.modalVideoUrls.push(data.video_url);
+                }
+                window.modalFilesQueue = []; // { type: 'gallery'|'color'|'video', cid: null, file: File }
 
                 // RENDER FUNCTIONS
 
@@ -520,7 +523,24 @@
                 };
 
 
+                const renderVideoGallery = () => {
+                    const vg = document.getElementById('v-video-preview');
+                    if(!vg) return;
+                    let html = window.modalVideoUrls.map((url, i) => `
+                        <div class="relative group cursor-move" draggable="true" ondragstart="window.dragStart(event, ${i}, 'video')" ondragover="event.preventDefault()" ondrop="window.dropGlobal(event, ${i})">
+                           <video src="${url}" class="h-20 w-full object-cover rounded border border-outline-variant pointer-events-none" muted></video>
+                           <button type="button" class="absolute top-1 right-1 bg-black/80 text-red-500 rounded p-1 hidden group-hover:block z-10" onclick="window.removeVideoGallery(${i})"><span class="material-symbols-outlined text-[10px]">close</span></button>
+                        </div>
+                    `).join('');
+                    // Queue UI
+                    window.modalFilesQueue.filter(f => f.type === 'video').forEach((q) => {
+                        html += `<div class="relative opacity-50"><video src="${URL.createObjectURL(q.file)}" class="h-20 w-full object-cover rounded border border-primary" muted></video><span class="absolute bottom-1 left-1 text-[8px] bg-black px-1 rounded text-primary uppercase font-bold tracking-widest">Pending</span></div>`;
+                    });
+                    vg.innerHTML = html;
+                };
+
                 window.removeGlobalGallery = (i) => { window.modalGlobalGalleryUrls.splice(i, 1); renderGlobalGallery(); };
+                window.removeVideoGallery = (i) => { window.modalVideoUrls.splice(i, 1); renderVideoGallery(); };
 
                 window.dragStart = (event, index, type) => {
                     event.dataTransfer.setData('index', index);
@@ -531,11 +551,16 @@
                     if(!event.dataTransfer.getData('index')) return;
                     const dragIndex = parseInt(event.dataTransfer.getData('index'));
                     const dragType = event.dataTransfer.getData('type');
-                    if (dragType !== 'global' || dragIndex === dropIndex) return;
                     
-                    const item = window.modalGlobalGalleryUrls.splice(dragIndex, 1)[0];
-                    window.modalGlobalGalleryUrls.splice(dropIndex, 0, item);
-                    renderGlobalGallery();
+                    if (dragType === 'global' && dragIndex !== dropIndex) {
+                        const item = window.modalGlobalGalleryUrls.splice(dragIndex, 1)[0];
+                        window.modalGlobalGalleryUrls.splice(dropIndex, 0, item);
+                        renderGlobalGallery();
+                    } else if (dragType === 'video' && dragIndex !== dropIndex) {
+                        const item = window.modalVideoUrls.splice(dragIndex, 1)[0];
+                        window.modalVideoUrls.splice(dropIndex, 0, item);
+                        renderVideoGallery();
+                    }
                 };
 
                 // Handle file input text replacement instantly for UI
@@ -546,19 +571,28 @@
                     });
 
                     document.getElementById('f-video-upload').addEventListener('change', e => {
-                        const file = e.target.files[0];
-                        if (file) document.getElementById('f-video-label').textContent = file.name;
+                        const files = Array.from(e.target.files);
+                        if (files.length > 0) {
+                            files.forEach(file => {
+                                window.modalFilesQueue.push({ type: 'video', cid: null, file: file });
+                            });
+                            renderVideoGallery();
+                            // Reset input
+                            e.target.value = '';
+                        }
                     });
 
-                    const ggInput = document.getElementById('f-global-gallery');
-                    if (ggInput) {
-                        ggInput.addEventListener('change', (e) => {
-                            Array.from(e.target.files).forEach(file => window.modalFilesQueue.push({ type: 'gallery', file }));
-                            renderGlobalGallery();
+                    document.getElementById('f-global-gallery').addEventListener('change', e => {
+                        const files = Array.from(e.target.files);
+                        files.forEach(file => {
+                            window.modalFilesQueue.push({ type: 'gallery', cid: null, file: file });
                         });
-                    }
+                        renderGlobalGallery();
+                        e.target.value = '';
+                    });
 
                     renderGlobalGallery();
+                    renderVideoGallery();
                 });
 
             } else if (type === 'brand') {
@@ -646,28 +680,20 @@
                         btn.textContent = "Saving Details...";
                     }
 
-                    // Upload video if a new one is selected
-                    const videoFileInput = document.getElementById('f-video-upload');
-                    let finalVideoUrl = document.getElementById('f-video-url').value;
-                    if (videoFileInput && videoFileInput.files.length > 0) {
-                        btn.textContent = "Uploading Video...";
-                        finalVideoUrl = await uploadImage(videoFileInput.files[0], 'uploads', 'vehicles');
-                        btn.textContent = "Saving Details...";
-                    }
-
-                    // Upload queued gallery and color files asynchronously
+                    // Upload queued gallery and video files asynchronously
                     if (window.modalFilesQueue && window.modalFilesQueue.length > 0) {
-                        btn.textContent = "Uploading gallery... (0/" + window.modalFilesQueue.length + ")";
+                        btn.textContent = "Uploading media... (0/" + window.modalFilesQueue.length + ")";
                         let completeCount = 0;
                         // Concurrent uploads can crash cheap instances, sequentially safe
                         for (let q of window.modalFilesQueue) {
                             try {
                                 const url = await uploadImage(q.file, 'uploads', 'vehicles');
                                 if (q.type === 'gallery') window.modalGlobalGalleryUrls.push(url);
+                                if (q.type === 'video') window.modalVideoUrls.push(url);
 
                             } catch(e) { console.error('Upload failed for file', q.file.name); }
                             completeCount++;
-                            btn.textContent = "Uploading gallery... (" + completeCount + "/" + window.modalFilesQueue.length + ")";
+                            btn.textContent = "Uploading media... (" + completeCount + "/" + window.modalFilesQueue.length + ")";
                         }
                         btn.textContent = "Saving Details...";
                     }
@@ -687,8 +713,8 @@
                         description: document.getElementById('f-desc').value || null,
                         description_ar: document.getElementById('f-desc-ar').value || null,
                         image_url: finalMainUrl || null,
-                        video_url: finalVideoUrl || null,
                         gallery: window.modalGlobalGalleryUrls || [],
+                        video_urls: window.modalVideoUrls || [],
 
                         is_spotlight: document.getElementById('f-spot').checked,
                         upon_request: document.getElementById('f-req').checked,
