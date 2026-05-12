@@ -1251,10 +1251,17 @@
 
         async function initAdminTranslations() {
             try {
-                translations = await fetch('/translations.json').then(r => r.json());
+                translations = await fetch('/translations.json', { cache: 'no-store' }).then(r => r.json());
                 applyAdminLanguage();
             } catch(e) { console.error(e); }
         }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'lang') {
+                currentLang = e.newValue || 'en';
+                applyAdminLanguage();
+            }
+        });
 
         function applyAdminLanguage() {
             document.documentElement.lang = currentLang;
