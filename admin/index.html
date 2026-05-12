@@ -961,6 +961,7 @@
                 `).join('');
             } catch(e) { tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-red-500 text-center">Error loading</td></tr>'; }
         }
+        window.renderInquiriesTable = renderInquiriesTable;
 
         // Global fn for inline click
         window.markRead = async function(id) {
@@ -1014,7 +1015,7 @@
                     <div><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Email</span><a href="mailto:${escapeHTML(m.email)}" class="text-primary text-sm font-medium mt-1">${escapeHTML(m.email)}</a></div>
                     <div><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Phone</span><a href="tel:${escapeHTML(m.phone || '')}" class="text-primary text-sm font-medium mt-1">${escapeHTML(m.phone || 'N/A')}</a></div>
                     <div><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Subject</span><p class="text-white text-sm font-medium mt-1">${escapeHTML(m.subject)}</p></div>
-                    <div class="border-t border-outline-variant pt-4"><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">Message Content</span><div class="text-neutral-300 text-sm whitespace-pre-wrap leading-relaxed">${fMsg}</div></div>
+                    <div class="border-t border-outline-variant pt-4"><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">Message Content</span><div class="text-neutral-300 text-sm whitespace-pre-wrap break-words break-all leading-relaxed">${fMsg}</div></div>
                 </div>
             `;
             // hide submit button

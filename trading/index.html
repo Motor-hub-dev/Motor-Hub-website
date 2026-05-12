@@ -199,7 +199,10 @@
                         <input id="f-phone" type="tel" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="+20 123 456 7890" data-i18n="form_placeholder_phone" />
                     </div>
                     <div>
-                        <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2" data-i18n="form_location_label">Location (Pin on map or type)</label>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold" data-i18n="form_location_label">Location (Pin on map or type)</label>
+                            <button type="button" id="btn-detect-loc" class="text-[10px] bg-primary text-black font-bold uppercase tracking-widest px-2 py-1 rounded hover:brightness-110 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">my_location</span></button>
+                        </div>
                         <div id="location-map" class="w-full h-48 bg-surface-container-low border border-outline-variant rounded relative z-10 mb-2"></div>
                         <input id="f-location" type="text" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="Selected Coordinates or your Address..." data-i18n="form_placeholder_location" />
                     </div>
@@ -341,26 +344,33 @@
 
         let marker = null;
 
-        // Auto-detect location
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                const latlng = [lat, lng];
+        function detectLocation() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const latlng = [lat, lng];
 
-                map.setView(latlng, 14);
-                if (marker) {
-                    marker.setLatLng(latlng);
-                } else {
-                    marker = L.marker(latlng).addTo(map);
-                }
+                    map.setView(latlng, 14);
+                    if (marker) {
+                        marker.setLatLng(latlng);
+                    } else {
+                        marker = L.marker(latlng).addTo(map);
+                    }
 
-                const gmapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
-                document.getElementById('f-location').value = gmapsLink;
-            }, function(error) {
-                console.log("Geolocation permission denied or unavailable.");
-            });
+                    const gmapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+                    document.getElementById('f-location').value = gmapsLink;
+                }, function(error) {
+                    console.log("Geolocation permission denied or unavailable.");
+                    alert("Please allow location access in your browser or type your location manually.");
+                });
+            }
         }
+
+        // Auto-detect location
+        detectLocation();
+
+        document.getElementById('btn-detect-loc')?.addEventListener('click', detectLocation);
 
         map.on('click', function(e) {
             const lat = e.latlng.lat;
