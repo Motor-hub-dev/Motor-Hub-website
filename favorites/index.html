@@ -183,7 +183,6 @@
                     </a>
                 </div>
             `;
-            if (typeof applyLanguage === 'function') applyLanguage();
         }
 
         function escapeHTML(str) {
@@ -227,7 +226,6 @@
                     </div>
                 </div>
             `}).join('');
-            if (typeof applyLanguage === 'function') applyLanguage();
         }
 
         window._updateFavPrices = function() {
@@ -265,7 +263,7 @@
         // ==== Global Social Sidebar ====
         (async () => {
             try {
-                const { getSettings } = await import('./settings.js');
+                const { getSettings } = await import('/settings.js');
                 const sideSettings = await getSettings();
                 const sidebar = document.getElementById('social-sidebar');
                 if (!sidebar) return;
@@ -345,7 +343,7 @@
                 const transRes = await fetch('/translations.json').then(r => r.json());
                 translations = transRes;
                 applyLanguage();
-                import('./events.js').then(m => m.applyEventTheme()).catch(e => console.error(e));
+                import('/events.js').then(m => m.applyEventTheme()).catch(e => console.error(e));
             } catch (err) {
                 console.error("Global init error:", err);
             }
