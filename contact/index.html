@@ -231,6 +231,26 @@
             const fallbackUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.080512877395!2d-0.1466031842298642!3d51.51174627963625!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487604d502268421%3A0x6a7d62889992f993!2sMayfair%2C%20London!5e0!3m2!1sen!2suk!4v1620000000000!5m2!1sen!2suk";
             try {
                 const settings = await getSettings();
+                // [AUTO-INJECT] Update FAB and hardcoded contact links
+                if (typeof settings !== 'undefined' || typeof sideSettings !== 'undefined') {
+                    const s = typeof settings !== 'undefined' ? settings : sideSettings;
+                    if (s && s.whatsapp_number) {
+                        document.querySelectorAll('a[href*="wa.me"]').forEach(el => {
+                            if (el.href.includes('123456789') || el.href.includes('wa.me')) {
+                                el.href = "https://wa.me/" + s.whatsapp_number.replace(/[^0-9]/g, '');
+                            }
+                        });
+                    }
+                    if (s && s.phone_number) {
+                        document.querySelectorAll('a[href*="tel:"]').forEach(el => {
+                            if (el.href.includes('123456789') || el.href.includes('tel:')) {
+                                el.href = "tel:" + s.phone_number.replace(/[^0-9+]/g, '');
+                            }
+                        });
+                    }
+                }
+                // [/AUTO-INJECT]
+
 
                 // Set Map URL
                 if (settings && settings.map_embed_url) {

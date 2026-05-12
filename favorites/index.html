@@ -265,6 +265,26 @@
             try {
                 const { getSettings } = await import('/settings.js');
                 const sideSettings = await getSettings();
+                // [AUTO-INJECT] Update FAB and hardcoded contact links
+                if (typeof settings !== 'undefined' || typeof sideSettings !== 'undefined') {
+                    const s = typeof settings !== 'undefined' ? settings : sideSettings;
+                    if (s && s.whatsapp_number) {
+                        document.querySelectorAll('a[href*="wa.me"]').forEach(el => {
+                            if (el.href.includes('123456789') || el.href.includes('wa.me')) {
+                                el.href = "https://wa.me/" + s.whatsapp_number.replace(/[^0-9]/g, '');
+                            }
+                        });
+                    }
+                    if (s && s.phone_number) {
+                        document.querySelectorAll('a[href*="tel:"]').forEach(el => {
+                            if (el.href.includes('123456789') || el.href.includes('tel:')) {
+                                el.href = "tel:" + s.phone_number.replace(/[^0-9+]/g, '');
+                            }
+                        });
+                    }
+                }
+                // [/AUTO-INJECT]
+
                 const sidebar = document.getElementById('social-sidebar');
                 if (!sidebar) return;
                 const sideLinks = [
