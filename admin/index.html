@@ -446,12 +446,14 @@
                             ${data.image_url ? `<img src="${escapeHTML(data.image_url)}" class="h-20 rounded object-cover mt-2 border border-outline-variant" />` : ''}
                         </div>
                         <div>
-                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Diagnostics (Optional)</label>
-                            <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2 mb-2 opacity-70">
-                                <input type="file" id="f-diag-upload" class="hidden" accept="application/pdf,image/*"/>
-                                <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-4 rounded-full opacity-50 cursor-not-allowed">Choose File</button>
-                                <span class="text-xs text-neutral-500">Attach Report (Disabled in UI mock)</span>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Video (Optional)</label>
+                            <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2 mb-2">
+                                <input type="file" id="f-video-upload" class="hidden" accept="video/*"/>
+                                <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-4 rounded-full" onclick="document.getElementById('f-video-upload').click()">Choose File</button>
+                                <span id="f-video-label" class="text-xs text-neutral-400">No file chosen</span>
                             </div>
+                            <input type="hidden" id="f-video-url" value="${escapeHTML(data.video_url || '')}"/>
+                            ${data.video_url ? `<div class="text-[10px] text-primary mt-1">Video currently set.</div>` : ''}
                         </div>
                     </div>
 
@@ -528,6 +530,11 @@
                     document.getElementById('f-main-upload').addEventListener('change', e => {
                         const file = e.target.files[0];
                         if (file) document.getElementById('f-main-label').textContent = file.name;
+                    });
+
+                    document.getElementById('f-video-upload').addEventListener('change', e => {
+                        const file = e.target.files[0];
+                        if (file) document.getElementById('f-video-label').textContent = file.name;
                     });
 
                     const ggInput = document.getElementById('f-global-gallery');
@@ -626,6 +633,15 @@
                         btn.textContent = "Saving Details...";
                     }
 
+                    // Upload video if a new one is selected
+                    const videoFileInput = document.getElementById('f-video-upload');
+                    let finalVideoUrl = document.getElementById('f-video-url').value;
+                    if (videoFileInput && videoFileInput.files.length > 0) {
+                        btn.textContent = "Uploading Video...";
+                        finalVideoUrl = await uploadImage(videoFileInput.files[0], 'uploads', 'vehicles');
+                        btn.textContent = "Saving Details...";
+                    }
+
                     // Upload queued gallery and color files asynchronously
                     if (window.modalFilesQueue && window.modalFilesQueue.length > 0) {
                         btn.textContent = "Uploading gallery... (0/" + window.modalFilesQueue.length + ")";
@@ -658,6 +674,7 @@
                         description: document.getElementById('f-desc').value || null,
                         description_ar: document.getElementById('f-desc-ar').value || null,
                         image_url: finalMainUrl || null,
+                        video_url: finalVideoUrl || null,
                         gallery: window.modalGlobalGalleryUrls || [],
 
                         is_spotlight: document.getElementById('f-spot').checked,

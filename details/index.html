@@ -143,6 +143,7 @@
 
             <div class="relative aspect-[4/3] bg-surface-container-low overflow-hidden">
                 <img id="main-image" src="" alt="Vehicle Image" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" onclick="openLightbox(0)" />
+                <video id="main-video" class="w-full h-full object-cover hidden" autoplay loop muted playsinline></video>
                 <button id="fav-btn" class="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur p-3 rounded-full text-white hover:text-red-500 transition-colors">
                     <span class="material-symbols-outlined" id="fav-icon">favorite_border</span>
                 </button>
@@ -344,7 +345,19 @@
             const descEl = document.getElementById('vehicle-description');
             descEl.textContent = desc || 'No description available.';
 
-            document.getElementById('main-image').src = v.image_url;
+            const mainImg = document.getElementById('main-image');
+            const mainVideo = document.getElementById('main-video');
+            
+            if (v.video_url) {
+                mainImg.classList.add('hidden');
+                mainVideo.classList.remove('hidden');
+                mainVideo.src = v.video_url;
+                mainImg.src = v.image_url;
+            } else {
+                mainVideo.classList.add('hidden');
+                mainImg.classList.remove('hidden');
+                mainImg.src = v.image_url;
+            }
 
             lightboxImages = v.gallery && v.gallery.length > 0 ? [v.image_url, ...v.gallery] : [v.image_url];
 
