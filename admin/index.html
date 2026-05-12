@@ -446,14 +446,12 @@
                             ${data.image_url ? `<img src="${escapeHTML(data.image_url)}" class="h-20 rounded object-cover mt-2 border border-outline-variant" />` : ''}
                         </div>
                         <div>
-                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Video (Optional)</label>
-                            <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2 mb-2">
-                                <input type="file" id="f-video-upload" class="hidden" accept="video/*"/>
-                                <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-4 rounded-full" onclick="document.getElementById('f-video-upload').click()">Choose File</button>
-                                <span id="f-video-label" class="text-xs text-neutral-400">No file chosen</span>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Diagnostics (Optional)</label>
+                            <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2 mb-2 opacity-70">
+                                <input type="file" id="f-diag-upload" class="hidden" accept="application/pdf,image/*"/>
+                                <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-4 rounded-full opacity-50 cursor-not-allowed">Choose File</button>
+                                <span class="text-xs text-neutral-500">Attach Report (Disabled in UI mock)</span>
                             </div>
-                            <input type="hidden" id="f-video-url" value="${escapeHTML(data.video_url || '')}"/>
-                            ${data.video_url ? `<div class="text-[10px] text-primary mt-1">Video currently set.</div>` : ''}
                         </div>
                     </div>
 
@@ -465,12 +463,24 @@
                         </select>
                         <div class="flex gap-6 items-center flex-wrap">
                             <label class="flex items-center text-white text-sm font-bold cursor-pointer"><input type="checkbox" id="f-spot" ${data.is_spotlight ? 'checked' : ''} class="mr-2 text-primary focus:ring-primary bg-[#1c1b1b] border-[#2b2a2a] rounded"/> Spotlight (Home Page)</label>
-                            <label class="flex items-center text-white text-sm font-bold cursor-pointer"><input type="checkbox" id="f-req" ${data.upon_request ? 'checked' : ''} class="mr-2 text-primary focus:ring-primary bg-[#1c1b1b] border-[#2b2a2a] rounded"/> Upon Request</label>
+                            <label class="flex items-center text-white text-sm font-bold cursor-pointer"><input type="checkbox" id="f-req" ${data.upon_request ? 'checked' : ''} class="mr-2 text-primary focus:ring-primary bg-[#1c1b1b] border-[#2b2a2a] rounded"/> Reserved</label>
                             <label class="flex items-center text-red-400 text-sm font-bold cursor-pointer"><input type="checkbox" id="f-sold" ${data.is_sold_out ? 'checked' : ''} class="mr-2 text-red-500 focus:ring-red-500 bg-[#1c1b1b] border-[#2b2a2a] rounded"/> Mark as Sold Out</label>
                         </div>
                     </div>
 
 
+
+                    <!-- Video Block -->
+                    <div id="v-video-block" class="mt-8 pt-8 border-t border-outline-variant space-y-4">
+                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest">Showcase Video (Optional)</h3>
+                        <div class="border border-dashed border-outline-variant rounded p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5" onclick="document.getElementById('f-video-upload').click()">
+                            <span class="material-symbols-outlined text-4xl text-neutral-500 mb-2">videocam</span>
+                            <span id="f-video-label" class="text-sm font-bold text-neutral-400 mb-2">Click to upload a video</span>
+                            <input type="file" id="f-video-upload" class="hidden" accept="video/*" />
+                            <input type="hidden" id="f-video-url" value="${escapeHTML(data.video_url || '')}"/>
+                        </div>
+                        ${data.video_url ? `<div class="text-[10px] text-primary mt-1 text-center">Video currently set.</div>` : ''}
+                    </div>
 
                     <!-- Gallery Block -->
                     <div id="v-gallery-block" class="mt-8 pt-8 border-t border-outline-variant space-y-4">

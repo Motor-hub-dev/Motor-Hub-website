@@ -279,7 +279,7 @@
         const finYears = document.getElementById('fin-years');
 
         function formatPriceFull(egpPrice) {
-            if (!egpPrice) return 'Upon Request';
+            if (!egpPrice) return 'Reserved';
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EGP', maximumFractionDigits: 0 }).format(egpPrice);
         }
 
