@@ -697,7 +697,7 @@
         // ==== Global Social Sidebar ====
         (async () => {
             try {
-                const { getSettings } = await import('/settings.js');
+                const { getSettings } = await import('/settings.js?v=2');
                 const settings = await getSettings();
                 // [AUTO-INJECT] Update FAB and hardcoded contact links
                 if (typeof settings !== 'undefined' || typeof sideSettings !== 'undefined') {

@@ -282,7 +282,7 @@
                 const res = await fetch('/translations.json');
                 translations = await res.json();
                 applyLanguage();
-                import('/events.js').then(m => m.applyEventTheme()).catch(e => console.error(e));
+                import('/events.js?v=2').then(m => m.applyEventTheme()).catch(e => console.error(e));
             } catch(e) { console.error("Translations failed"); }
         }
 
@@ -316,7 +316,7 @@
         // ==== Global Social Sidebar ====
         (async () => {
             try {
-                const { getSettings } = await import('/settings.js');
+                const { getSettings } = await import('/settings.js?v=2');
                 const sideSettings = await getSettings();
                 // [AUTO-INJECT] Update FAB and hardcoded contact links
                 if (typeof settings !== 'undefined' || typeof sideSettings !== 'undefined') {
