@@ -18,6 +18,25 @@ export async function getMessages() {
 export async function createMessage(message) {
   const { data, error } = await supabase.from('messages').insert([{ ...message, is_read: false }]).select();
   if (error) throw error;
+
+  // Sync to Google Sheets via Edge Function (fire-and-forget)
+  try {
+    fetch('https://wyuenhyfnnnvhgknoknt.supabase.co/functions/v1/sync-to-sheets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'Inquiry',
+        name: message.name || '',
+        email: message.email || '',
+        phone: message.phone || '',
+        subject: message.subject || '',
+        message: message.message || ''
+      })
+    }).catch(e => console.warn('Sheets sync failed:', e));
+  } catch (e) {
+    console.warn('Sheets sync error:', e);
+  }
+
   return data[0];
 }
 
