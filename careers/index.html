@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Motor Hub - Careers</title>
+<link href="https://fonts.googleapis.com/css2?family=Metropolis:wght@400;500;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config">
+tailwind.config={darkMode:"class",theme:{extend:{colors:{primary:"#f2ca50",background:"#131313",surface:"#131313","on-surface":"#e5e2e1","surface-container-low":"#1c1b1b","outline-variant":"#4d4635","surface-container":"#20201f","surface-container-high":"#2a2a29"}}}};
+</script>
+<style>
+.nav-toggle-btn{background:#1a1812;border:1px solid rgba(242,202,80,0.4);color:#f2ca50;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 14px;border-radius:4px;cursor:pointer;transition:all .2s ease}
+.nav-toggle-btn:hover{background:rgba(242,202,80,0.1);border-color:#f2ca50;box-shadow:0 0 10px rgba(242,202,80,0.2)}
+html,body{overflow-x:hidden;max-width:100vw;scroll-behavior:smooth}
+body{font-family:'Lexend',sans-serif}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#131313}
+::-webkit-scrollbar-thumb{background:#4d4635}
+::-webkit-scrollbar-thumb:hover{background:#f2ca50}
+.team-accordion .team-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.team-accordion.open .team-body{max-height:3000px}
+.team-accordion .chevron{transition:transform .3s ease}
+.team-accordion.open .chevron{transform:rotate(180deg)}
+#social-sidebar{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:49;display:flex;flex-direction:column;gap:0}
+.social-side-btn{display:flex;align-items:center;justify-content:center;width:42px;height:42px;background:rgba(19,19,19,0.92);border:1px solid rgba(242,202,80,0.25);border-left:3px solid rgba(242,202,80,0.5);color:#f2ca50;font-size:1rem;text-decoration:none;transition:all .25s ease;backdrop-filter:blur(10px)}
+.social-side-btn:hover{background:rgba(242,202,80,0.12);border-left-color:#f2ca50;box-shadow:2px 0 16px rgba(242,202,80,0.2);transform:translateX(5px);color:#f2ca50}
+@media(max-width:640px){#social-sidebar{display:none}}
+</style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 pt-8 pb-6 shadow-2xl shadow-yellow-500/10">
+<div class="relative flex items-center justify-center">
+<a href="/" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 z-10 cursor-pointer peer" aria-label="Home"></a>
+<img src="/motor-hub-logo.png" alt="Motor Hub Logo" class="h-[64px] md:h-[92px] object-contain transition-opacity peer-hover:opacity-80"/>
+</div>
+<div class="hidden md:flex gap-10 items-center">
+<a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="/inventory/" data-i18n="nav_inventory">Inventory</a>
+<a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="/favorites/" data-i18n="nav_favorites">Favorites</a>
+<a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="/trading/" data-i18n="nav_trading">Sell / Trade</a>
+<a class="font-manrope tracking-tight font-bold uppercase text-white transition-colors text-sm border-b-2 border-primary pb-1" href="/careers/" data-i18n="nav_careers">Careers</a>
+<a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="/about/" data-i18n="nav_about">About</a>
+<a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="/contact/" data-i18n="nav_contact">Contact</a>
+<button id="lang-toggle" class="nav-toggle-btn">AR</button>
+</div>
+<button id="mobile-menu-btn" class="md:hidden text-primary p-1"><span class="material-symbols-outlined">menu</span></button>
+</nav>
+<!-- Mobile Drawer -->
+<div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-48 px-6 pb-12">
+<a class="text-2xl font-bold uppercase text-white mb-6" href="/inventory/" data-i18n="nav_inventory">Inventory</a>
+<a class="text-2xl font-bold uppercase text-white mb-6" href="/favorites/" data-i18n="nav_favorites">Favorites</a>
+<a class="text-2xl font-bold uppercase text-white mb-6" href="/trading/" data-i18n="nav_trading">Sell / Trade</a>
+<a class="text-2xl font-bold uppercase text-primary mb-6" href="/careers/" data-i18n="nav_careers">Careers</a>
+<a class="text-2xl font-bold uppercase text-white mb-6" href="/about/" data-i18n="nav_about">About</a>
+<a class="text-2xl font-bold uppercase text-white mb-12" href="/contact/" data-i18n="nav_contact">Contact</a>
+<button id="mobile-lang-toggle" class="nav-toggle-btn text-left mb-4 w-fit">Switch to AR</button>
+</div>
+<main class="flex-grow pt-32 pb-24 px-4 md:px-12 max-w-[1400px] mx-auto w-full">
+<!-- Hero -->
+<header class="text-center mb-20">
+<span class="text-primary tracking-[0.2em] font-bold text-xs uppercase mb-4 block" data-i18n="careers_subtitle">Career Opportunities</span>
+<h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6 text-white uppercase" data-i18n="careers_title">JOIN OUR<br/><span class="text-primary">TEAM</span></h1>
+<p class="text-neutral-400 text-base md:text-lg leading-relaxed max-w-2xl mx-auto">We are architects of luxury and engineers of performance. At Motor Hub, we redefine the automotive journey through passion, precision, and unparalleled service.</p>
+</header>
+<!-- Teams Container (dynamic) -->
+<div id="teams-container" class="space-y-6">
+<p class="text-center text-neutral-500">Loading teams...</p>
+</div>
+<!-- No vacancies message -->
+<div id="no-vacancies" class="hidden text-center py-20">
+<span class="material-symbols-outlined text-6xl text-neutral-600 mb-4 block">work_off</span>
+<p class="text-neutral-400 text-lg" data-i18n="careers_no_vacancies">No open positions at this time.</p>
+</div>
+</main>
+<!-- Job Detail Modal -->
+<div id="job-detail-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+<div class="bg-[#1c1b1b] border border-[#4d4635] w-full max-w-3xl max-h-[90vh] overflow-y-auto p-8 md:p-12 relative rounded">
+<button id="close-detail" class="absolute top-4 right-4 text-neutral-500 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+<div id="job-detail-content"></div>
+<button id="btn-open-apply" class="mt-8 w-full bg-primary text-black py-4 font-bold uppercase tracking-widest text-sm hover:brightness-110 transition-all" data-i18n="careers_apply_now">Apply Now</button>
+</div>
+</div>
+<!-- Application Modal -->
+<div id="apply-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden items-center justify-center p-4">
+<div class="bg-[#1c1b1b] border border-[#4d4635] w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 md:p-12 relative rounded">
+<button id="close-apply" class="absolute top-4 right-4 text-neutral-500 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+<h3 class="text-3xl font-bold uppercase tracking-tight text-white mb-2">APPLICATION FORM</h3>
+<p id="apply-job-title" class="text-primary text-sm font-bold tracking-[0.2em] uppercase mb-10"></p>
+<form id="apply-form" class="space-y-8">
+<input type="hidden" id="apply-job-id"/>
+<div class="grid md:grid-cols-2 gap-8">
+<div><label class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2" data-i18n="careers_full_name">Full Name</label><input id="app-name" required class="w-full bg-transparent border-b border-[#4d4635] py-2 focus:outline-none focus:border-primary text-white transition-all" type="text"/></div>
+<div><label class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2" data-i18n="careers_email">Email Address</label><input id="app-email" required class="w-full bg-transparent border-b border-[#4d4635] py-2 focus:outline-none focus:border-primary text-white transition-all" type="email"/></div>
+</div>
+<div><label class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2" data-i18n="careers_phone">Phone Number</label><input id="app-phone" class="w-full bg-transparent border-b border-[#4d4635] py-2 focus:outline-none focus:border-primary text-white transition-all" type="tel"/></div>
+<div id="cv-drop-zone" class="py-12 border-2 border-dashed border-[#4d4635] text-center rounded cursor-pointer hover:border-primary transition-all">
+<span class="material-symbols-outlined text-4xl text-neutral-500 mb-2 block">cloud_upload</span>
+<p class="text-xs font-bold uppercase tracking-widest text-neutral-400" data-i18n="careers_upload_cv">Upload CV / Resume</p>
+<p id="cv-file-name" class="text-primary text-xs mt-2 hidden"></p>
+<input type="file" id="app-cv" class="hidden"/>
+</div>
+<button type="submit" id="btn-submit-app" class="w-full bg-primary text-black py-4 font-bold uppercase tracking-widest text-sm hover:brightness-110 transition-all" data-i18n="careers_submit">Submit Application</button>
+<p id="apply-success" class="text-green-500 text-center font-bold text-sm hidden" data-i18n="careers_success">Application submitted successfully!</p>
+<p id="apply-error" class="text-red-500 text-center text-sm hidden"></p>
+</form>
+</div>
+</div>
+<!-- Social Sidebar -->
+<div id="social-sidebar"></div>
+<!-- FAB -->
+<button id="fab-btn" class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-background rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50"><span class="material-symbols-outlined">chat</span></button>
+<div id="fab-popup" class="fixed bottom-24 right-8 bg-surface-container-low border border-outline-variant p-4 rounded shadow-2xl hidden z-50 flex-col gap-4">
+<a href="https://wa.me/123456789" target="_blank" class="flex items-center gap-3 text-white hover:text-primary transition-colors"><span class="material-symbols-outlined">chat_bubble</span> WhatsApp</a>
+<a href="tel:+123456789" class="flex items-center gap-3 text-white hover:text-primary transition-colors"><span class="material-symbols-outlined">call</span> Direct Call</a>
+</div>
+<script type="module">
+import { supabase } from '/supabaseClient.js';
+import { getTeams } from '/teams.js';
+import { getActiveJobs } from '/jobs.js';
+import { createApplication, uploadResume } from '/applications.js';
+import { getSettings } from '/settings.js';
+
+const lang = () => localStorage.getItem('lang') || 'en';
+const container = document.getElementById('teams-container');
+let allTeams = [], allJobs = [], currentJobId = null;
+
+async function init() {
+  try {
+    [allTeams, allJobs] = await Promise.all([getTeams(), getActiveJobs()]);
+    if (allTeams.length === 0) { container.innerHTML = ''; document.getElementById('no-vacancies').classList.remove('hidden'); return; }
+    renderTeams(allTeams, allJobs);
+  } catch(e) { container.innerHTML = '<p class="text-red-500 text-center">Failed to load careers data.</p>'; console.error(e); }
+}
+
+function renderTeams(teams, jobs) {
+  const l = lang();
+  container.innerHTML = teams.map(t => {
+    const teamJobs = jobs.filter(j => j.team_id === t.id);
+    const tName = l === 'ar' && t.name_ar ? t.name_ar : t.name_en;
+    return `<div class="team-accordion border border-[#4d4635] bg-[#1c1b1b] rounded overflow-hidden transition-all hover:border-primary/40" data-team-id="${t.id}">
+      <div class="team-header p-6 md:p-8 flex justify-between items-center cursor-pointer" onclick="this.parentElement.classList.toggle('open')">
+        <h3 class="text-xl md:text-2xl font-bold tracking-widest uppercase text-white">${esc(tName)}</h3>
+        <div class="flex items-center gap-4">
+          <span class="text-xs text-neutral-500 font-bold uppercase tracking-widest">${teamJobs.length} position${teamJobs.length !== 1 ? 's' : ''}</span>
+          <span class="material-symbols-outlined text-primary text-2xl chevron">expand_more</span>
+        </div>
+      </div>
+      <div class="team-body">
+        <div class="px-6 md:px-8 pb-8">
+          <div class="relative mb-6 max-w-md">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">search</span>
+            <input class="team-search w-full bg-[#20201f] border-b border-[#4d4635] py-3 pl-10 text-white text-xs uppercase tracking-widest focus:outline-none focus:border-primary transition-colors" placeholder="Search positions..." data-team="${t.id}" oninput="window.filterJobs(this)"/>
+          </div>
+          <div class="jobs-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-team="${t.id}">
+            ${teamJobs.length === 0 ? '<p class="text-neutral-500 text-sm col-span-full">No open positions in this team.</p>' : teamJobs.map(j => jobCard(j, l)).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function jobCard(j, l) {
+  const title = l === 'ar' && j.title_ar ? j.title_ar : j.title_en;
+  return `<div class="job-card border border-[#4d4635] bg-[#20201f] p-6 rounded transition-all hover:bg-[#2a2a29] hover:border-primary/30" data-title="${esc(j.title_en.toLowerCase())}">
+    <h4 class="text-lg font-bold text-white mb-4">${esc(title)}</h4>
+    <button class="w-full py-3 border border-[#4d4635] text-xs font-bold uppercase tracking-widest text-neutral-300 hover:border-primary hover:text-primary transition-all" onclick="window.viewJob('${j.id}')">${l === 'ar' ? 'عرض التفاصيل' : 'View Details'}</button>
+  </div>`;
+}
+
+function esc(s) { return s ? String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])) : ''; }
+
+window.filterJobs = function(input) {
+  const q = input.value.toLowerCase();
+  const tid = input.dataset.team;
+  document.querySelectorAll(`.jobs-grid[data-team="${tid}"] .job-card`).forEach(c => {
+    c.style.display = c.dataset.title.includes(q) ? '' : 'none';
+  });
+};
+
+window.viewJob = function(jobId) {
+  const l = lang();
+  const j = allJobs.find(x => x.id === jobId);
+  if (!j) return;
+  currentJobId = jobId;
+  const title = l === 'ar' && j.title_ar ? j.title_ar : j.title_en;
+  const desc = l === 'ar' && j.description_ar ? j.description_ar : (j.description_en || 'No description available.');
+  const tName = j.teams ? (l === 'ar' && j.teams.name_ar ? j.teams.name_ar : j.teams.name_en) : '';
+  document.getElementById('job-detail-content').innerHTML = `
+    <p class="text-primary text-xs font-bold tracking-[0.2em] uppercase mb-4">${esc(tName)}</p>
+    <h2 class="text-3xl md:text-4xl font-bold uppercase tracking-tight text-white mb-8">${esc(title)}</h2>
+    <h4 class="text-sm font-bold text-primary uppercase tracking-widest mb-4">${l === 'ar' ? 'وصف الوظيفة' : 'Job Description'}</h4>
+    <div class="text-neutral-400 text-sm leading-relaxed whitespace-pre-wrap">${esc(desc)}</div>`;
+  const m = document.getElementById('job-detail-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+};
+
+document.getElementById('close-detail').addEventListener('click', () => {
+  const m = document.getElementById('job-detail-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+});
+
+document.getElementById('btn-open-apply').addEventListener('click', () => {
+  document.getElementById('job-detail-modal').classList.add('hidden');
+  document.getElementById('job-detail-modal').classList.remove('flex');
+  const j = allJobs.find(x => x.id === currentJobId);
+  const l = lang();
+  document.getElementById('apply-job-title').textContent = j ? (l === 'ar' && j.title_ar ? j.title_ar : j.title_en) : '';
+  document.getElementById('apply-job-id').value = currentJobId;
+  const m = document.getElementById('apply-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+});
+
+document.getElementById('close-apply').addEventListener('click', () => {
+  const m = document.getElementById('apply-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+});
+
+// CV drop zone
+const cvZone = document.getElementById('cv-drop-zone');
+const cvInput = document.getElementById('app-cv');
+cvZone.addEventListener('click', () => cvInput.click());
+cvInput.addEventListener('change', () => {
+  if (cvInput.files[0]) {
+    document.getElementById('cv-file-name').textContent = cvInput.files[0].name;
+    document.getElementById('cv-file-name').classList.remove('hidden');
+  }
+});
+
+// Submit application
+document.getElementById('apply-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('btn-submit-app');
+  const errEl = document.getElementById('apply-error');
+  const succEl = document.getElementById('apply-success');
+  errEl.classList.add('hidden'); succEl.classList.add('hidden');
+  btn.textContent = 'Uploading...'; btn.disabled = true;
+  try {
+    let resumePath = '';
+    if (cvInput.files[0]) { resumePath = await uploadResume(cvInput.files[0]); }
+    const appData = {
+      job_vacancy_id: document.getElementById('apply-job-id').value,
+      name: document.getElementById('app-name').value,
+      email: document.getElementById('app-email').value,
+      phone: document.getElementById('app-phone').value || null,
+      resume_url: resumePath
+    };
+    await createApplication(appData);
+    // Sync to Google Sheets
+    const j = allJobs.find(x => x.id === appData.job_vacancy_id);
+    try {
+      fetch('https://wyuenhyfnnnvhgknoknt.supabase.co/functions/v1/sync-to-sheets', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ type:'Application', name:appData.name, email:appData.email, phone:appData.phone||'', subject:j?j.title_en:'', message:'Resume: '+resumePath })
+      }).catch(()=>{});
+    } catch(ex){}
+    succEl.classList.remove('hidden');
+    document.getElementById('apply-form').reset();
+    document.getElementById('cv-file-name').classList.add('hidden');
+    setTimeout(() => { document.getElementById('apply-modal').classList.add('hidden'); document.getElementById('apply-modal').classList.remove('flex'); succEl.classList.add('hidden'); }, 2500);
+  } catch(err) {
+    errEl.textContent = 'Submission failed: ' + err.message;
+    errEl.classList.remove('hidden');
+  } finally { btn.textContent = 'Submit Application'; btn.disabled = false; }
+});
+
+// Social sidebar
+async function initSocial() {
+  try {
+    const settings = await getSettings();
+    if (settings && settings.whatsapp_number) { document.querySelectorAll('a[href*="wa.me"]').forEach(el => { el.href = "https://wa.me/" + settings.whatsapp_number.replace(/[^0-9]/g, ''); }); }
+    if (settings && settings.phone_number) { document.querySelectorAll('a[href*="tel:"]').forEach(el => { el.href = "tel:" + settings.phone_number.replace(/[^0-9+]/g, ''); }); }
+    const sidebar = document.getElementById('social-sidebar');
+    if (!sidebar) return;
+    const links = [
+      {icon:'fa-brands fa-instagram',label:'Instagram',href:settings.instagram_link},
+      {icon:'fa-brands fa-facebook-f',label:'Facebook',href:settings.facebook_link},
+      {icon:'fa-brands fa-tiktok',label:'TikTok',href:settings.tiktok_link},
+      {icon:'fa-brands fa-whatsapp',label:'WhatsApp',href:settings.whatsapp_number?`https://wa.me/${settings.whatsapp_number.replace(/[^0-9]/g,'')}`:null}
+    ];
+    sidebar.innerHTML = links.filter(l=>l.href).map(l=>`<a href="${l.href}" target="_blank" rel="noopener noreferrer" class="social-side-btn" title="${l.label}"><i class="${l.icon}"></i></a>`).join('');
+  } catch(e) {}
+}
+
+init();
+initSocial();
+</script>
+<script>
+// Mobile Menu
+const menuBtn=document.getElementById('mobile-menu-btn'),drawer=document.getElementById('mobile-drawer');
+if(menuBtn&&drawer){menuBtn.addEventListener('click',()=>{drawer.classList.toggle('translate-x-full');menuBtn.innerHTML=drawer.classList.contains('translate-x-full')?'<span class="material-symbols-outlined">menu</span>':'<span class="material-symbols-outlined">close</span>';});}
+// FAB
+const fabBtn=document.getElementById('fab-btn'),fabPopup=document.getElementById('fab-popup');
+if(fabBtn&&fabPopup){fabBtn.addEventListener('click',()=>{fabPopup.classList.toggle('hidden');fabPopup.classList.toggle('flex');});}
+// Language
+let currentLang=localStorage.getItem('lang')||'en';let translations={};
+async function initGlobal(){try{translations=await fetch('/translations.json').then(r=>r.json());applyLanguage();}catch(e){}}
+function applyLanguage(){document.documentElement.lang=currentLang;document.documentElement.dir=currentLang==='ar'?'rtl':'ltr';document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(translations[currentLang]&&translations[currentLang][k]){if(el.hasAttribute('placeholder')){el.placeholder=translations[currentLang][k];}else if(el.tagName==='OPTION'){el.text=translations[currentLang][k];}else{if(translations[currentLang][k].includes('<')){el.innerHTML=translations[currentLang][k];}else{el.textContent=translations[currentLang][k];}}}});const lt=document.getElementById('lang-toggle');if(lt)lt.textContent=currentLang==='en'?'AR':'EN';const mlt=document.getElementById('mobile-lang-toggle');if(mlt)mlt.textContent=currentLang==='en'?'Switch to AR':'Switch to EN';}
+document.getElementById('lang-toggle')?.addEventListener('click',()=>{currentLang=currentLang==='en'?'ar':'en';localStorage.setItem('lang',currentLang);applyLanguage();});
+document.getElementById('mobile-lang-toggle')?.addEventListener('click',()=>{currentLang=currentLang==='en'?'ar':'en';localStorage.setItem('lang',currentLang);applyLanguage();});
+initGlobal();
+</script>
+</body>
+</html>

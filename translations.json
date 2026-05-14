@@ -131,7 +131,22 @@
     "fav_empty_title": "NO VEHICLES SAVED",
     "fav_empty_desc": "YOUR CURATED COLLECTION IS CURRENTLY EMPTY",
     "fav_explore": "EXPLORE INVENTORY",
-    "nav_home": "Home"
+    "nav_home": "Home",
+    "nav_careers": "Careers",
+    "careers_title": "JOIN OUR TEAM",
+    "careers_subtitle": "Career Opportunities",
+    "careers_apply_now": "Apply Now",
+    "careers_full_name": "Full Name",
+    "careers_email": "Email Address",
+    "careers_phone": "Phone Number",
+    "careers_upload_cv": "Upload CV / Resume",
+    "careers_submit": "Submit Application",
+    "careers_success": "Application submitted successfully!",
+    "careers_no_vacancies": "No open positions at this time.",
+    "careers_search": "Search positions...",
+    "careers_view_details": "View Details",
+    "careers_job_desc": "Job Description",
+    "admin_careers": "Careers"
   },
   "ar": {
     "nav_inventory": "المعرض",
@@ -265,6 +280,21 @@
     "fav_empty_title": "لا توجد مركبات محفوظة",
     "fav_empty_desc": "مجموعتك المختارة فارغة حاليًا",
     "fav_explore": "استكشف الم",
-    "nav_home": "الرئيسية"
+    "nav_home": "الرئيسية",
+    "nav_careers": "وظائف",
+    "careers_title": "انضم لفريقنا",
+    "careers_subtitle": "فرص العمل",
+    "careers_apply_now": "قدم الآن",
+    "careers_full_name": "الاسم الكامل",
+    "careers_email": "البريد الإلكتروني",
+    "careers_phone": "رقم الهاتف",
+    "careers_upload_cv": "رفع السيرة الذاتية",
+    "careers_submit": "إرسال الطلب",
+    "careers_success": "تم إرسال الطلب بنجاح!",
+    "careers_no_vacancies": "لا توجد وظائف شاغرة حالياً.",
+    "careers_search": "ابحث عن وظيفة...",
+    "careers_view_details": "عرض التفاصيل",
+    "careers_job_desc": "وصف الوظيفة",
+    "admin_careers": "وظائف"
   }
 }
