@@ -274,7 +274,7 @@
                     <div class="overflow-x-auto border border-outline-variant bg-surface-container-low">
                         <table class="w-full text-left text-sm">
                             <thead class="border-b border-outline-variant uppercase text-[10px] tracking-widest text-neutral-400">
-                                <tr><th class="p-4 w-10"></th><th class="p-4">Name (EN)</th><th class="p-4">Name (AR)</th><th class="p-4">Order</th><th class="p-4 text-right">Actions</th></tr>
+                                <tr><th class="p-4 w-10"></th><th class="p-4">Name (EN)</th><th class="p-4">Name (AR)</th><th class="p-4 text-right">Actions</th></tr>
                             </thead>
                             <tbody id="teams-tbody" class="divide-y divide-outline-variant/30 text-white">
                                 <tr><td colspan="4" class="p-4 text-center text-neutral-500">Loading...</td></tr>
@@ -375,6 +375,96 @@ dashboardView.classList.add('hidden');
 dashboardView.classList.remove('flex');
 }
 );
+        // ==== GLOBAL DRAG AND DROP LOGIC ====
+        window.dragStart = (event, index, type) => {
+            event.dataTransfer.setData('text/plain', JSON.stringify({index, type}));
+        };
+        window.dragRowStart = (event, id, type) => {
+            event.dataTransfer.setData('text/plain', JSON.stringify({id, type}));
+            event.target.closest('tr').classList.add('opacity-50', 'bg-primary/10');
+        };
+        window.dragRowOver = (event) => {
+            event.preventDefault();
+            const row = event.target.closest('tr');
+            if (row) row.classList.add('border-t-2', 'border-primary');
+        };
+        window.dragRowLeave = (event) => {
+            const row = event.target.closest('tr');
+            if (row) row.classList.remove('border-t-2', 'border-primary');
+        };
+        window.dropRow = async (event, targetId, type) => {
+            event.preventDefault();
+            let sourceId, sourceType;
+            try {
+                const data = JSON.parse(event.dataTransfer.getData('text/plain') || '{}');
+                sourceId = data.id;
+                sourceType = data.type;
+            } catch(e) { return; }
+            if (sourceType !== type || sourceId === targetId) return;
+
+            const tbody = event.target.closest('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const sourceRow = rows.find(r => r.getAttribute('data-id') === sourceId);
+            const targetRow = rows.find(r => r.getAttribute('data-id') === targetId);
+
+            if (sourceRow && targetRow) {
+                const sourceIndex = rows.indexOf(sourceRow);
+                const targetIndex = rows.indexOf(targetRow);
+                if (sourceIndex < targetIndex) {
+                    targetRow.after(sourceRow);
+                } else {
+                    targetRow.before(sourceRow);
+                }
+                // Save new order
+                if (type === 'team') await saveTeamsOrder();
+                if (type === 'job') await saveJobsOrder();
+            }
+        };
+        async function saveTeamsOrder() {
+            const rows = Array.from(document.getElementById('teams-tbody').querySelectorAll('tr'));
+            const updates = rows.map((row, idx) => ({
+                id: row.getAttribute('data-id'),
+                order_index: idx
+            }));
+            try {
+                for (let up of updates) {
+                    await updateTeam(up.id, { order_index: up.order_index });
+                }
+            } catch (err) { console.error('Failed to save team order', err); }
+        }
+        async function saveJobsOrder() {
+            const rows = Array.from(document.getElementById('jobs-tbody').querySelectorAll('tr'));
+            const updates = rows.map((row, idx) => ({
+                id: row.getAttribute('data-id'),
+                order_index: idx
+            }));
+            try {
+                for (let up of updates) {
+                    await updateJob(up.id, { order_index: up.order_index });
+                }
+            } catch (err) { console.error('Failed to save job order', err); }
+        }
+        window.dropGlobal = (event, dropIndex) => {
+            event.preventDefault();
+            let dragIndex, dragType;
+            try {
+                const data = JSON.parse(event.dataTransfer.getData('text/plain') || '{}');
+                dragIndex = parseInt(data.index);
+                dragType = data.type;
+            } catch(e) { return; }
+            if(isNaN(dragIndex)) return;
+            
+            if (dragType === 'global' && dragIndex !== dropIndex) {
+                const item = window.modalGlobalGalleryUrls.splice(dragIndex, 1)[0];
+                window.modalGlobalGalleryUrls.splice(dropIndex, 0, item);
+                renderGlobalGallery();
+            } else if (dragType === 'video' && dragIndex !== dropIndex) {
+                const item = window.modalVideoUrls.splice(dragIndex, 1)[0];
+                window.modalVideoUrls.splice(dropIndex, 0, item);
+                renderVideoGallery();
+            }
+        };
+
         // ==== CRUD MODAL LOGIC ====
         window.openModal = async function(type, id = null, dataStr = null) {
 crudType.value = type;
@@ -438,87 +528,7 @@ window.modalVideoUrls.splice(i, 1);
 renderVideoGallery();
 }
 ;
-        window.dragStart = (event, index, type) => {
-            event.dataTransfer.setData('index', index);
-            event.dataTransfer.setData('type', type);
-        };
-        window.dragRowStart = (event, id, type) => {
-            event.dataTransfer.setData('id', id);
-            event.dataTransfer.setData('type', type);
-            event.target.closest('tr').classList.add('opacity-50', 'bg-primary/10');
-        };
-        window.dragRowOver = (event) => {
-            event.preventDefault();
-            const row = event.target.closest('tr');
-            if (row) row.classList.add('border-t-2', 'border-primary');
-        };
-        window.dragRowLeave = (event) => {
-            const row = event.target.closest('tr');
-            if (row) row.classList.remove('border-t-2', 'border-primary');
-        };
-        window.dropRow = async (event, targetId, type) => {
-            event.preventDefault();
-            const sourceId = event.dataTransfer.getData('id');
-            const sourceType = event.dataTransfer.getData('type');
-            if (sourceType !== type || sourceId === targetId) return;
 
-            const tbody = event.target.closest('tbody');
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-            const sourceRow = rows.find(r => r.getAttribute('data-id') === sourceId);
-            const targetRow = rows.find(r => r.getAttribute('data-id') === targetId);
-
-            if (sourceRow && targetRow) {
-                const sourceIndex = rows.indexOf(sourceRow);
-                const targetIndex = rows.indexOf(targetRow);
-                if (sourceIndex < targetIndex) {
-                    targetRow.after(sourceRow);
-                } else {
-                    targetRow.before(sourceRow);
-                }
-                // Save new order
-                if (type === 'team') await saveTeamsOrder();
-                if (type === 'job') await saveJobsOrder();
-            }
-        };
-        async function saveTeamsOrder() {
-            const rows = Array.from(document.getElementById('teams-tbody').querySelectorAll('tr'));
-            const updates = rows.map((row, idx) => ({
-                id: row.getAttribute('data-id'),
-                order_index: idx
-            }));
-            try {
-                for (let up of updates) {
-                    await updateTeam(up.id, { order_index: up.order_index });
-                }
-            } catch (err) { console.error('Failed to save team order', err); }
-        }
-        async function saveJobsOrder() {
-            const rows = Array.from(document.getElementById('jobs-tbody').querySelectorAll('tr'));
-            const updates = rows.map((row, idx) => ({
-                id: row.getAttribute('data-id'),
-                order_index: idx
-            }));
-            try {
-                for (let up of updates) {
-                    await updateJob(up.id, { order_index: up.order_index });
-                }
-            } catch (err) { console.error('Failed to save job order', err); }
-        }
-        window.dropGlobal = (event, dropIndex) => {
-            event.preventDefault();
-            if(!event.dataTransfer.getData('index')) return;
-            const dragIndex = parseInt(event.dataTransfer.getData('index'));
-            const dragType = event.dataTransfer.getData('type');
-            if (dragType === 'global' && dragIndex !== dropIndex) {
-                const item = window.modalGlobalGalleryUrls.splice(dragIndex, 1)[0];
-                window.modalGlobalGalleryUrls.splice(dropIndex, 0, item);
-                renderGlobalGallery();
-            } else if (dragType === 'video' && dragIndex !== dropIndex) {
-                const item = window.modalVideoUrls.splice(dragIndex, 1)[0];
-                window.modalVideoUrls.splice(dropIndex, 0, item);
-                renderVideoGallery();
-            }
-        };
                 // Handle file input text replacement instantly for UI
                 requestAnimationFrame(() => {
 document.getElementById('f-main-upload').addEventListener('change', e => {
@@ -579,14 +589,14 @@ crudFormFields.innerHTML = `                    <div class="space-y-4">         
                 modalBox.classList.remove('max-w-4xl');
                 modalBox.classList.add('max-w-xl');
                 modalTitle.textContent = id ? 'Edit Team' : 'Add Team';
-                crudFormFields.innerHTML = '<div class="space-y-4"><div><label class="block text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-2">Team Name (EN)</label><input id="f-team-name-en" required value="'+escapeHTML(data.name_en||'')+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3" placeholder="Sales Team" /></div><div><label class="block text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-2">Team Name (AR)</label><input id="f-team-name-ar" dir="rtl" value="'+escapeHTML(data.name_ar||'')+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3" placeholder="" /></div><div><label class="block text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-2">Order Index</label><input id="f-team-order" type="number" value="'+(data.order_index||0)+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3" /></div></div>';
+                crudFormFields.innerHTML = '<div class="space-y-4"><div><label class="block text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-2">Team Name (EN)</label><input id="f-team-name-en" required value="'+escapeHTML(data.name_en||'')+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3" placeholder="Sales Team" /></div><div><label class="block text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-2">Team Name (AR)</label><input id="f-team-name-ar" dir="rtl" value="'+escapeHTML(data.name_ar||'')+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3" placeholder="" /></div><input id="f-team-order" type="hidden" value="'+(data.order_index||0)+'" /></div>';
             } else if (type === 'job') {
                 modalBox.classList.remove('max-w-xl');
                 modalBox.classList.add('max-w-4xl');
                 modalTitle.textContent = id ? 'Edit Job Vacancy' : 'Add Job Vacancy';
                 const allTeams = await getTeams();
                 const teamOpts = allTeams.map(t => '<option value="'+t.id+'" '+(t.id===data.team_id?'selected':'')+'>'+escapeHTML(t.name_en)+'</option>').join('');
-                crudFormFields.innerHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="space-y-4"><h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Basic Info</h3><div><label class="block text-[11px] text-neutral-400 mb-1">Title (EN)</label><input id="f-job-title-en" required value="'+escapeHTML(data.title_en||'')+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" /></div><div><label class="block text-[11px] text-neutral-400 mb-1">Title (AR)</label><input id="f-job-title-ar" dir="rtl" value="'+escapeHTML(data.title_ar||'')+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" /></div><div><label class="block text-[11px] text-neutral-400 mb-1">Team</label><select id="f-job-team" required class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm appearance-none"><option value="">Select Team</option>'+teamOpts+'</select></div><div class="flex gap-4"><label class="flex items-center text-white text-sm font-bold cursor-pointer"><input type="checkbox" id="f-job-active" '+(data.is_active!==false?'checked':'')+' class="mr-2 text-primary focus:ring-primary bg-[#1c1b1b] border-[#2b2a2a] rounded"/> Active</label></div></div><div class="space-y-4"><h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Details</h3><div><label class="block text-[11px] text-neutral-400 mb-1">Location</label><input id="f-job-location" value="'+escapeHTML(data.location||'')+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Cairo, Egypt" /></div><div><label class="block text-[11px] text-neutral-400 mb-1">Employment Type</label><input id="f-job-type" value="'+escapeHTML(data.employment_type||'')+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Full-time" /></div><div><label class="block text-[11px] text-neutral-400 mb-1">Order Index</label><input id="f-job-order" type="number" value="'+(data.order_index||0)+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" /></div></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 pt-8 border-t border-outline-variant"><div><label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Description (EN)</label><textarea id="f-job-desc-en" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm h-32 resize-none">'+escapeHTML(data.description_en||'')+'</textarea></div><div><label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Description (AR)</label><textarea id="f-job-desc-ar" dir="rtl" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm h-32 resize-none">'+escapeHTML(data.description_ar||'')+'</textarea></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4"><div><label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Requirements (EN)</label><textarea id="f-job-req-en" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm h-32 resize-none">'+escapeHTML(data.requirements_en||'')+'</textarea></div><div><label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Requirements (AR)</label><textarea id="f-job-req-ar" dir="rtl" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm h-32 resize-none">'+escapeHTML(data.requirements_ar||'')+'</textarea></div></div>';
+                crudFormFields.innerHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="space-y-4"><h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Basic Info</h3><div><label class="block text-[11px] text-neutral-400 mb-1">Title (EN)</label><input id="f-job-title-en" required value="'+escapeHTML(data.title_en||'')+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" /></div><div><label class="block text-[11px] text-neutral-400 mb-1">Title (AR)</label><input id="f-job-title-ar" dir="rtl" value="'+escapeHTML(data.title_ar||'')+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" /></div><div><label class="block text-[11px] text-neutral-400 mb-1">Team</label><select id="f-job-team" required class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm appearance-none"><option value="">Select Team</option>'+teamOpts+'</select></div><div class="flex gap-4"><label class="flex items-center text-white text-sm font-bold cursor-pointer"><input type="checkbox" id="f-job-active" '+(data.is_active!==false?'checked':'')+' class="mr-2 text-primary focus:ring-primary bg-[#1c1b1b] border-[#2b2a2a] rounded"/> Active</label></div></div><div class="space-y-4"><h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Details</h3><div><label class="block text-[11px] text-neutral-400 mb-1">Location</label><input id="f-job-location" value="'+escapeHTML(data.location||'')+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Cairo, Egypt" /></div><div><label class="block text-[11px] text-neutral-400 mb-1">Employment Type</label><input id="f-job-type" value="'+escapeHTML(data.employment_type||'')+'" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Full-time" /></div><input id="f-job-order" type="hidden" value="'+(data.order_index||0)+'" /></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 pt-8 border-t border-outline-variant"><div><label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Description (EN)</label><textarea id="f-job-desc-en" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm h-32 resize-none">'+escapeHTML(data.description_en||'')+'</textarea></div><div><label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Description (AR)</label><textarea id="f-job-desc-ar" dir="rtl" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm h-32 resize-none">'+escapeHTML(data.description_ar||'')+'</textarea></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4"><div><label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Requirements (EN)</label><textarea id="f-job-req-en" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm h-32 resize-none">'+escapeHTML(data.requirements_en||'')+'</textarea></div><div><label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Requirements (AR)</label><textarea id="f-job-req-ar" dir="rtl" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm h-32 resize-none">'+escapeHTML(data.requirements_ar||'')+'</textarea></div></div>';
             }
             crudModal.classList.remove('hidden');
             crudModal.classList.add('flex');
@@ -1173,7 +1183,6 @@ crudFormFields.innerHTML = `                    <div class="space-y-4">         
                         </td>
                         <td class="p-4 font-bold">${escapeHTML(t.name_en)}</td>
                         <td class="p-4 text-neutral-400">${escapeHTML(t.name_ar || '')}</td>
-                        <td class="p-4 text-neutral-400">${t.order_index||0}</td>
                         <td class="p-4 flex gap-4 text-xs font-bold uppercase tracking-widest justify-end">
                             <button class="text-blue-400 hover:text-blue-300 edit-team-btn" data-id="${escapeHTML(t.id)}">Edit</button>
                             <button class="text-red-400 hover:text-red-300 del-team-btn" data-id="${escapeHTML(t.id)}">Delete</button>

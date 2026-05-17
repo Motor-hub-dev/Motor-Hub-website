@@ -19,9 +19,9 @@ export async function getApplications() {
  * @returns {Promise<Object>} Created application
  */
 export async function createApplication(application) {
-    const { data, error } = await supabase.from('applications').insert([application]).select();
+    const { error } = await supabase.from('applications').insert([application]);
     if (error) throw error;
-    return data[0];
+    return null;
 }
 
 /**

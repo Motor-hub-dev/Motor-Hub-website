@@ -299,8 +299,8 @@ if(fabBtn&&fabPopup){fabBtn.addEventListener('click',()=>{fabPopup.classList.tog
 let currentLang=localStorage.getItem('lang')||'en';let translations={};
 async function initGlobal(){try{translations=await fetch('/translations.json').then(r=>r.json());applyLanguage();}catch(e){}}
 function applyLanguage(){document.documentElement.lang=currentLang;document.documentElement.dir=currentLang==='ar'?'rtl':'ltr';document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(translations[currentLang]&&translations[currentLang][k]){if(el.hasAttribute('placeholder')){el.placeholder=translations[currentLang][k];}else if(el.tagName==='OPTION'){el.text=translations[currentLang][k];}else{if(translations[currentLang][k].includes('<')){el.innerHTML=translations[currentLang][k];}else{el.textContent=translations[currentLang][k];}}}});const lt=document.getElementById('lang-toggle');if(lt)lt.textContent=currentLang==='en'?'AR':'EN';const mlt=document.getElementById('mobile-lang-toggle');if(mlt)mlt.textContent=currentLang==='en'?'Switch to AR':'Switch to EN';}
-document.getElementById('lang-toggle')?.addEventListener('click',()=>{currentLang=currentLang==='en'?'ar':'en';localStorage.setItem('lang',currentLang);applyLanguage();});
-document.getElementById('mobile-lang-toggle')?.addEventListener('click',()=>{currentLang=currentLang==='en'?'ar':'en';localStorage.setItem('lang',currentLang);applyLanguage();});
+document.getElementById('lang-toggle')?.addEventListener('click',()=>{currentLang=currentLang==='en'?'ar':'en';localStorage.setItem('lang',currentLang);window.location.reload();});
+document.getElementById('mobile-lang-toggle')?.addEventListener('click',()=>{currentLang=currentLang==='en'?'ar':'en';localStorage.setItem('lang',currentLang);window.location.reload();});
 initGlobal();
 </script>
 </body>
